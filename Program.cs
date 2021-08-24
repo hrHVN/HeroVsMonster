@@ -17,24 +17,28 @@ namespace HeroVsMonster
             //Class selection
             
             bool x = false;
+            int z = 0;
             
-            
-            Console.WriteLine("Select your Class!");
+            Console.WriteLine($"Select your Class! {hero.Name}");
             while (!x)
             {
-                int z = 0;
-                PlayerClass Current = EnumHelper.GetEnumValue<PlayerClass>(z);
-                Console.WriteLine($"Press \"Y\" to select {Current} class, or " + "press \"N\" to se next option");
+                var Current = (PlayerClass)z;
+                //PlayerClass Current = EnumHelper.GetEnumValue<PlayerClass>(z);
+                
+                Console.WriteLine($"Press \"Y\" to select: \t{Current}." + "(press \"N\" to se next option)");
                 string input = Console.ReadLine();
 
-                if (input != "y") { z = (z == 4) ?  0 : z++; }
+                if ((input != "y") && (z < 3)) { z++; }
+                else if ((input != "y") && (z == 4)) { z = 0; }
+                else 
+                {
+                    hero.pClass = Current.ToString();
+                    Console.WriteLine($"You have chosen {hero.pClass}!");
+                    x = true; 
+                }
             }
 
-
-            int monstersBeaten;
-
-            
-
+            Console.WriteLine(Player.defaultValues());
             /*
              * This is the base code, from an .NET tutorial @ microsoftDocs
              * https://docs.microsoft.com/nb-no/learn/modules/csharp-do-while/4-solution#code-try-9
@@ -77,12 +81,12 @@ namespace HeroVsMonster
 
     class Character
     {
-        public string name { get; set; }
+        public string name;
 
-        int health { get; }
-        int attackStrength { get; }
-        int level { get; }
-        int defence { get; }
+        int health;
+        int attackStrength;
+        int level;
+        int defence;
 
         Dice multiplier = new Dice();
 
@@ -97,16 +101,34 @@ namespace HeroVsMonster
 
     class Player : Character
     {
-        public string Name { get;  set; }
-        public int Health { get; }
+        public string Name { get; set; }
+        public string Health { get; set; }
+        public string Level { get; set; }
 
         public string pClass;
+        public int monstersBeaten;
 
-        
+        static void defaultValues()
+        {
+            Console.WriteLine(pClass);
+        }
+
+        static void Race()
+        {
+            switch () { }
+        }
+        /*switch ()
+            {
+                case 1:
+                break;
+                default:    //Farmer
+                    Hp = 10;
+                break;
+            }*/
     }
 
     class Monster : Character
-    {
+{
         public string Name { get; set; }
         public int Health { get; }
     }
@@ -141,5 +163,10 @@ namespace HeroVsMonster
     public enum PlayerClass
     {
         Farmer, Warrior, Mage, Archer
+    }
+
+    public enum MonsterClass
+    {
+        Orc, Gobblin, Giant, Wolf, Sheep
     }
 }
