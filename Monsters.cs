@@ -35,9 +35,23 @@ namespace HeroVsMonster
             switch (MonsterClass)
             {
                 case "Orc":
-                    Defence.Add(" ");
+                    Defence.Add("ThickHide");
+                    MonsterHealth = 75 * MonsterLevel;
                     break;
             }
+
+            switch (MonsterWeapon)
+            {
+                case "WoodenClub":
+                    AttackType = "Blunt";
+                    break;
+            }
+
+            // Adds a predefined random selection of items for the monster;
+            string[] _ekstraDefence = { "Leather Armor" };
+            int _ekstra = _random.Next(1, _ekstraDefence.GetLength(0));
+            for (int i = 0; i < _ekstra; i++) { Defence.Add(_ekstraDefence[i]); }
+            
         }
 
         static void MonsterDialogue()
@@ -53,7 +67,7 @@ namespace HeroVsMonster
 
     enum MonsterWeapon
     {
-        WoodenClub, MakeShiftSword, TreeTrunk, GobblinWand, Pebbles
+        WoodenClub, MakeShiftSword, TreeTrunk, GobblinWand, Pebbles, Fists
     }
 
     class BossMonster

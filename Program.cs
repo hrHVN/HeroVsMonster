@@ -155,24 +155,188 @@ namespace HeroVsMonster
         {
             int _result = 0;
             double _weapon;
-            double _attackType;
+            double _attackTypeMultiplier;
+            string _attackType;
+            List<string> _defenceType = new List<string>();
 
             if (_attacker != Game.HeroName) // The monster attacks
             {
-
+                _attackType = Monsters.AttackType;
+                foreach (string x in Game.Defence) { _defenceType.Add(x); }
             }
             else // The hero attacks
             {
-                foreach (string w in Game.PreferedWeapon)
-                { if (Game.HeroWeapon != w) { _weapon = 0.7; }
-                    else { _weapon = 3; break; } 
-                }
-                foreach (string a in Monsters.Defence)
+                _attackType = Game.AttackType;
+                foreach (string x in Monsters.Defence) { _defenceType.Add(x); }
+            }
+            
+            foreach (string a in _defenceType)
+            {
+                if ((_attackType == "Blunt") || (_attackType == "BluntFist") || (_attackType == "RangedBlunt"))
                 {
-                    if (Game.AttackType != a) { _attackType = 0.7; }
-                    else { _attackType = 3; break; }
+                    switch (a)
+                    {
+                        case "Faith":
+                            _attackTypeMultiplier =+ 0.88;
+                            break;
+                        case "Leather":
+                            _attackTypeMultiplier =+ 0.45;
+                            break;
+                        case "ArchaneRobe":
+                            _attackTypeMultiplier =+ 0.88;
+                            break;
+                        case "Steel":
+                            _attackTypeMultiplier =- 1  ;
+                            break;
+                        case "ThickHide":
+                            _attackTypeMultiplier = + 0.56;
+                            break;
+                        case "Copper":
+                            _attackTypeMultiplier = + 0.33;
+                            break;
+                        case "ChainMail":
+                            _attackTypeMultiplier = + 0.52;
+                            break;
+                        case "HolyRobe":
+                            _attackTypeMultiplier = + 0.88;
+                            break;
+                        default: // None
+                            _attackTypeMultiplier = + 2;
+                            break;
+                    }
                 }
-
+                else if ((Game.AttackType == "RangedSharp") || (Game.AttackType == "Sharp"))
+                {
+                    switch (a)
+                    {
+                        case "Faith":
+                            _attackTypeMultiplier = +0.88;
+                            break;
+                        case "Leather":
+                            _attackTypeMultiplier = +0.45;
+                            break;
+                        case "ArchaneRobe":
+                            _attackTypeMultiplier = +0.88;
+                            break;
+                        case "Steel":
+                            _attackTypeMultiplier = -1;
+                            break;
+                        case "ThickHide":
+                            _attackTypeMultiplier = +0.56;
+                            break;
+                        case "Copper":
+                            _attackTypeMultiplier = +0.33;
+                            break;
+                        case "ChainMail":
+                            _attackTypeMultiplier = +0.52;
+                            break;
+                        case "HolyRobe":
+                            _attackTypeMultiplier = +0.88;
+                            break;
+                        default: // None
+                            _attackTypeMultiplier = +2;
+                            break;
+                    }
+                }
+                else if ((Game.AttackType == "MagicArchane"))
+                {
+                    switch (a)
+                    {
+                        case "Faith":
+                            _attackTypeMultiplier = +0.88;
+                            break;
+                        case "Leather":
+                            _attackTypeMultiplier = +0.45;
+                            break;
+                        case "ArchaneRobe":
+                            _attackTypeMultiplier = +0.88;
+                            break;
+                        case "Steel":
+                            _attackTypeMultiplier = -1;
+                            break;
+                        case "ThickHide":
+                            _attackTypeMultiplier = +0.56;
+                            break;
+                        case "Copper":
+                            _attackTypeMultiplier = +0.33;
+                            break;
+                        case "ChainMail":
+                            _attackTypeMultiplier = +0.52;
+                            break;
+                        case "HolyRobe":
+                            _attackTypeMultiplier = +0.88;
+                            break;
+                        default: // None
+                            _attackTypeMultiplier = +2;
+                            break;
+                    }
+                }
+                else if ((Game.AttackType == "MagicHoly")) 
+                {
+                    switch (a)
+                    {
+                        case "Faith":
+                            _attackTypeMultiplier = +0.88;
+                            break;
+                        case "Leather":
+                            _attackTypeMultiplier = +0.45;
+                            break;
+                        case "ArchaneRobe":
+                            _attackTypeMultiplier = +0.88;
+                            break;
+                        case "Steel":
+                            _attackTypeMultiplier = -1;
+                            break;
+                        case "ThickHide":
+                            _attackTypeMultiplier = +0.56;
+                            break;
+                        case "Copper":
+                            _attackTypeMultiplier = +0.33;
+                            break;
+                        case "ChainMail":
+                            _attackTypeMultiplier = +0.52;
+                            break;
+                        case "HolyRobe":
+                            _attackTypeMultiplier = +0.88;
+                            break;
+                        default: // None
+                            _attackTypeMultiplier = +2;
+                            break;
+                    }
+                }
+                else //Ptichfork
+                {
+                    switch (a)
+                    {
+                        case "Faith":
+                            _attackTypeMultiplier = +0.88;
+                            break;
+                        case "Leather":
+                            _attackTypeMultiplier = +0.45;
+                            break;
+                        case "ArchaneRobe":
+                            _attackTypeMultiplier = +0.88;
+                            break;
+                        case "Steel":
+                            _attackTypeMultiplier = -1;
+                            break;
+                        case "ThickHide":
+                            _attackTypeMultiplier = +0.56;
+                            break;
+                        case "Copper":
+                            _attackTypeMultiplier = +0.33;
+                            break;
+                        case "ChainMail":
+                            _attackTypeMultiplier = +0.52;
+                            break;
+                        case "HolyRobe":
+                            _attackTypeMultiplier = +0.88;
+                            break;
+                        default: // None
+                            _attackTypeMultiplier = +2;
+                            break;
+                    }
+                }
             }
 
             return _result;
@@ -248,7 +412,7 @@ namespace HeroVsMonster
         }
     }
 
-     class Utility
+    class Utility
     {
         static string margin = "\t";
         static string indent = "\t\t";
@@ -545,16 +709,16 @@ namespace HeroVsMonster
 
     public enum PlayerWeapons
     {
-        PitchFork, Sword, GreatSword, Mace, Staff, Wand, Shovel, Bow, CrossBow, Umbrella, Empty
+        PitchFork, Sword, GreatSword, Mace, Staff, Wand, Shovel, Bow, CrossBow, Umbrella, Fists
     }
 
     public enum DefenceType
     {
-        None, Faith, Leather, Magic, Steel
+        None, Faith, Leather, ArchaneRobe, Steel, ThickHide, Copper, ChainMail, HolyRobe
     }
 
     public enum AttackType
     {
-        Fist, Holy, Arrow, Archane, Sword
+        BluntFist, Blunt, RangedSharp, RangedBlunt, MagicArchane, MagicHoly, Sharp
     }
 }
