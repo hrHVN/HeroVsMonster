@@ -32,6 +32,11 @@ namespace HeroVsMonster
             var Weapon = (MonsterWeapon)_MonsterWeapon;
             MonsterWeapon = Weapon.ToString();
 
+            //Setting the Monster Level
+            int _maxLevel = (Game.HeroLevel > 20) ? Game.HeroLevel * 3 : 5;
+            int _minLevel = (Game.HeroLevel < 20) ? 1 : 20;
+            MonsterLevel = Game.HeroLevel + _random.Next(_minLevel,_maxLevel);
+
             switch (MonsterClass)
             {
                 case "Orc":

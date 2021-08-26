@@ -2,6 +2,16 @@
 using System.Collections.Generic;
 using System.Globalization;
 
+/*
+ *  To DO;
+ *  Add Monster class switchcases
+ *  Add Monster weapon switchcase
+ *  Add StoryLine
+ *  Add Action window
+ *  Add Navigation
+ *  Add save/load function
+ */
+
 namespace HeroVsMonster
 {
     class Program
@@ -18,13 +28,16 @@ namespace HeroVsMonster
         public static string HeroName;
         public static string HeroClass;
         public static string HeroWeapon;
-        public static int HeroLevel;
-        public static int HeroHealth;
         public static string AttackType;
+
+        public static int HeroLevel;
+        public static int HeroXp;
+        public static int HeroHealth;
 
         public static List<string> PreferedWeapon = new List<string>();
         public static List<string> Defence = new List<string>();
         public static List<string> Inventory = new List<string>();
+        public static Double Wallet;
 
         public static void StartGame() // Logic to itterate trough the game sequence
         {
@@ -71,6 +84,11 @@ namespace HeroVsMonster
 
         static void PlayerCreation() // Player creation, name + class = Starting specs
         {
+            // Starting Level
+            HeroLevel = 1;
+            HeroXp = 0;
+            Wallet = 50.00;
+
             // Name Creation
             HeroName = Utility.Input("Enter your Name Hero");
             Utility.Write($"Welcome {HeroName}! \n We have been awaiting your arrival for some time now..", "red");
@@ -101,31 +119,31 @@ namespace HeroVsMonster
             switch (HeroClass)
             {
                 case "Warrior":
-                    HeroHealth = 10;
+                    HeroHealth = 120;
                     PreferedWeapon.Add("GreatSword");PreferedWeapon.Add("Sword"); PreferedWeapon.Add("Mace");
                     Defence.Add("Steel");
                     AttackType = "Sword";
                     break;
                 case "Mage":
-                    HeroHealth = 10;
+                    HeroHealth = 75;
                     PreferedWeapon.Add("Wand"); PreferedWeapon.Add("Staff");
                     Defence.Add("Magic");
                     AttackType = "Archane";
                     break;
                 case "Archer":
-                    HeroHealth = 10;
+                    HeroHealth = 80;
                     PreferedWeapon.Add("Bow"); PreferedWeapon.Add("CrossBow");
                     Defence.Add("Leather"); 
                     AttackType = "Arrow";
                     break;
                 case "Munk":
-                    HeroHealth = 10;
+                    HeroHealth = 80;
                     PreferedWeapon.Add("Staff"); PreferedWeapon.Add("Umbrella");
                     Defence.Add("Faith");
                     AttackType = "Holy";
                     break;
                 default:    //Farmer
-                    HeroHealth = 10;
+                    HeroHealth = 150;
                     PreferedWeapon.Add("Pitchfork"); PreferedWeapon.Add("Shovel");
                     Defence.Add("None");
                     AttackType = "Fist";
@@ -148,28 +166,60 @@ namespace HeroVsMonster
 
         public static void Loop()
         {
-
+            Fight();
         }
 
+        public static void LevelUp()
+        {
+            int _xp = Game.HeroXp;
+            int _level = Game.HeroLevel;
+
+            int _nextLevel = 100;
+
+            if (_xp >= _nextLevel) 
+            { 
+                Game.HeroLevel++;
+                _nextLevel += (_nextLevel / 3);
+
+                Utility.Write($"Congratulations, you have leveled up!! {Game.HeroLevel}");
+            }
+            else { Utility.Write($"Next Level in {_nextLevel - _xp}!", "cyan"); }
+        }
+
+        // Function that calculates (Weapon skill + Weapon type - Defence) x  Level, reurns Multiplikasjon(int)
         public static int AttackMultiplier(string _attacker)
         {
-            int _result = 0;
-            double _weapon;
-            double _attackTypeMultiplier;
-            string _attackType;
-            List<string> _defenceType = new List<string>();
+            int _level = 1;
 
-            if (_attacker != Game.HeroName) // The monster attacks
+            string _weapon;
+            double _weaponValue;
+
+            double _attackTypeMultiplier = 0.2;
+            string _attackType;
+
+            List<string> _defenceType = new List<string>();
+            List<string> _preferdWeapon = new List<string>();
+
+            // The monster attacks
+            if (_attacker != Game.HeroName) 
             {
                 _attackType = Monsters.AttackType;
+                _level = Monsters.MonsterLevel;
+                _weapon = Monsters.MonsterWeapon;
                 foreach (string x in Game.Defence) { _defenceType.Add(x); }
+                foreach (string pw in Monsters.PreferedWeapon) { _preferdWeapon.Add(pw); }
             }
-            else // The hero attacks
+            // The hero attacks
+            else
             {
                 _attackType = Game.AttackType;
+                _level = Game.HeroLevel;
+                _weapon = Game.HeroWeapon;
                 foreach (string x in Monsters.Defence) { _defenceType.Add(x); }
+                foreach (string pw in Game.PreferedWeapon) { _preferdWeapon.Add(pw); }
             }
             
+            // AttackType vs DefenceType value selector
             foreach (string a in _defenceType)
             {
                 if ((_attackType == "Blunt") || (_attackType == "BluntFist") || (_attackType == "RangedBlunt"))
@@ -192,10 +242,10 @@ namespace HeroVsMonster
                             _attackTypeMultiplier = + 0.56;
                             break;
                         case "Copper":
-                            _attackTypeMultiplier = + 0.33;
+                            _attackTypeMultiplier = - 0.33;
                             break;
                         case "ChainMail":
-                            _attackTypeMultiplier = + 0.52;
+                            _attackTypeMultiplier = - 0.52;
                             break;
                         case "HolyRobe":
                             _attackTypeMultiplier = + 0.88;
@@ -210,31 +260,31 @@ namespace HeroVsMonster
                     switch (a)
                     {
                         case "Faith":
-                            _attackTypeMultiplier = +0.88;
+                            _attackTypeMultiplier =+ 1.2;
                             break;
                         case "Leather":
-                            _attackTypeMultiplier = +0.45;
+                            _attackTypeMultiplier =+ 0.75;
                             break;
                         case "ArchaneRobe":
-                            _attackTypeMultiplier = +0.88;
+                            _attackTypeMultiplier =+ 1.2;
                             break;
                         case "Steel":
-                            _attackTypeMultiplier = -1;
+                            _attackTypeMultiplier =+ 0.25;
                             break;
                         case "ThickHide":
-                            _attackTypeMultiplier = +0.56;
+                            _attackTypeMultiplier =+ 0.75;
                             break;
                         case "Copper":
-                            _attackTypeMultiplier = +0.33;
+                            _attackTypeMultiplier =+ 0.45;
                             break;
                         case "ChainMail":
-                            _attackTypeMultiplier = +0.52;
+                            _attackTypeMultiplier =+ 0.35;
                             break;
                         case "HolyRobe":
-                            _attackTypeMultiplier = +0.88;
+                            _attackTypeMultiplier =+ 1.2;
                             break;
                         default: // None
-                            _attackTypeMultiplier = +2;
+                            _attackTypeMultiplier =+ 1.5;
                             break;
                     }
                 }
@@ -243,28 +293,28 @@ namespace HeroVsMonster
                     switch (a)
                     {
                         case "Faith":
-                            _attackTypeMultiplier = +0.88;
+                            _attackTypeMultiplier =+ 0.38;
                             break;
                         case "Leather":
-                            _attackTypeMultiplier = +0.45;
+                            _attackTypeMultiplier =+ 1.45;
                             break;
                         case "ArchaneRobe":
-                            _attackTypeMultiplier = +0.88;
+                            _attackTypeMultiplier =- 1.0;
                             break;
                         case "Steel":
-                            _attackTypeMultiplier = -1;
+                            _attackTypeMultiplier =+ 1.7;
                             break;
                         case "ThickHide":
-                            _attackTypeMultiplier = +0.56;
+                            _attackTypeMultiplier =+ 1;
                             break;
                         case "Copper":
-                            _attackTypeMultiplier = +0.33;
+                            _attackTypeMultiplier =+ 1.5;
                             break;
                         case "ChainMail":
-                            _attackTypeMultiplier = +0.52;
+                            _attackTypeMultiplier =+ 1.52;
                             break;
                         case "HolyRobe":
-                            _attackTypeMultiplier = +0.88;
+                            _attackTypeMultiplier =+ 0.28;
                             break;
                         default: // None
                             _attackTypeMultiplier = +2;
@@ -276,28 +326,28 @@ namespace HeroVsMonster
                     switch (a)
                     {
                         case "Faith":
-                            _attackTypeMultiplier = +0.88;
+                            _attackTypeMultiplier = +0.38;
                             break;
                         case "Leather":
-                            _attackTypeMultiplier = +0.45;
+                            _attackTypeMultiplier = +1.45;
                             break;
                         case "ArchaneRobe":
-                            _attackTypeMultiplier = +0.88;
+                            _attackTypeMultiplier = +0.28;
                             break;
                         case "Steel":
-                            _attackTypeMultiplier = -1;
+                            _attackTypeMultiplier = +1.7;
                             break;
                         case "ThickHide":
-                            _attackTypeMultiplier = +0.56;
+                            _attackTypeMultiplier = +1;
                             break;
                         case "Copper":
-                            _attackTypeMultiplier = +0.33;
+                            _attackTypeMultiplier = +1.5;
                             break;
                         case "ChainMail":
-                            _attackTypeMultiplier = +0.52;
+                            _attackTypeMultiplier = +1.52;
                             break;
                         case "HolyRobe":
-                            _attackTypeMultiplier = +0.88;
+                            _attackTypeMultiplier = -1.0;
                             break;
                         default: // None
                             _attackTypeMultiplier = +2;
@@ -306,40 +356,46 @@ namespace HeroVsMonster
                 }
                 else //Ptichfork
                 {
-                    switch (a)
-                    {
-                        case "Faith":
-                            _attackTypeMultiplier = +0.88;
-                            break;
-                        case "Leather":
-                            _attackTypeMultiplier = +0.45;
-                            break;
-                        case "ArchaneRobe":
-                            _attackTypeMultiplier = +0.88;
-                            break;
-                        case "Steel":
-                            _attackTypeMultiplier = -1;
-                            break;
-                        case "ThickHide":
-                            _attackTypeMultiplier = +0.56;
-                            break;
-                        case "Copper":
-                            _attackTypeMultiplier = +0.33;
-                            break;
-                        case "ChainMail":
-                            _attackTypeMultiplier = +0.52;
-                            break;
-                        case "HolyRobe":
-                            _attackTypeMultiplier = +0.88;
-                            break;
-                        default: // None
-                            _attackTypeMultiplier = +2;
-                            break;
-                    }
+                    _attackTypeMultiplier = +2;
                 }
             }
 
-            return _result;
+            // Adding weapon hit bonus
+            switch (_weapon)
+            {
+                    // Farmer tools
+                case "Umbrella": _weaponValue = 0.2; break;
+                case "Pebbles": _weaponValue = 0.3; break;
+                case "PitchFork": _weaponValue = 1.5; break;
+                case "Shovel": _weaponValue = 1; break;
+                    // Magic Tools
+                case "Staff": _weaponValue = 0.4; break;
+                case "Wand": _weaponValue = 0.42; break;
+                case "GobblinWand": _weaponValue = 0.34; break;
+                    //Warrior Tools
+                case "Sword": _weaponValue = 0.75; break;
+                case "GreatSword": _weaponValue = 1; break;
+                case "Mace": _weaponValue = 0.75; break;
+                    //Archer Tools
+                case "Bow": _weaponValue = 0.67; break;
+                case "CrossBow": _weaponValue = 0.85; break;
+                    //Monster Tools
+                case "WoodenClub": _weaponValue = 0.51; break;
+                case "MakeShiftSword": _weaponValue = 0.75; break;
+                case "TreeTrunk": _weaponValue = 2; break;
+                    // Fists
+                default:
+                    _weaponValue = 0.2;
+                    break;
+            }
+
+            // Loop to add bonus if Preafferd weapon is chosen.
+            foreach (string pw in _preferdWeapon) { _weaponValue = (pw == _weapon) ? _weaponValue * 3 : + 0; }
+            
+            // Adding and multiplying everything
+            var _result = (_attackTypeMultiplier + _weaponValue) * (double)_level;
+
+            return (int)_result;
         }
 
         public static void Fight()
@@ -375,20 +431,24 @@ namespace HeroVsMonster
             }
             while (Game.HeroHealth > 0 && Monsters.MonsterHealth > 0);
 
+            // Wictory loop
             if (Game.HeroHealth > Monsters.MonsterHealth) 
             { 
                 Utility.Write($".. The {Monsters.MonsterClass} crumbles to the ground reciving it's final blow from your" +
                     $" {Game.HeroWeapon} taking {playerAttack} damage!");
                 //Give Hero the xp and stats.
-                Game.HeroLevel += (Monsters.MonsterLevel % 3);
+                Game.HeroXp += (Monsters.MonsterLevel % 3);
                 MonstersBeaten++;
             }
+            //Game Over
             else 
             { 
                 Utility.Heading("Game Over!");
                 Utility.Write($"You where beaten by a {Monsters.MonsterClass}...");
                 Utility.Write($"Final Level: {Game.HeroLevel} \nMonsters beaten: {MonstersBeaten}");
             }
+            
+            LevelUp();
             Utility.Pause(); // Pause before continue the story
         }
     }
