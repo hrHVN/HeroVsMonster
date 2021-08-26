@@ -20,10 +20,10 @@ namespace HeroVsMonster
         public static string HeroWeapon;
         public static int HeroLevel;
         public static int HeroHealth;
+        public static string AttackType;
 
         public static List<string> PreferedWeapon = new List<string>();
         public static List<string> Defence = new List<string>();
-        public static string AttackType;
         public static List<string> Inventory = new List<string>();
 
         public static void StartGame() // Logic to itterate trough the game sequence
@@ -72,14 +72,6 @@ namespace HeroVsMonster
         static void PlayerCreation() // Player creation, name + class = Starting specs
         {
             // Name Creation
-            /*
-            Console.Write("\n\t Enter your name Hero: ");
-            HeroName = Console.ReadLine();
-            Console.WriteLine($"\nWelcome {HeroName}!");
-            Console.WriteLine("\n\n\t Press any Key to continue!");
-            Console.ReadKey();
-            Console.Clear();
-            */
             HeroName = Utility.Input("Enter your Name Hero");
             Utility.Write($"Welcome {HeroName}! \n We have been awaiting your arrival for some time now..", "red");
             Utility.Pause();
@@ -103,10 +95,8 @@ namespace HeroVsMonster
                     HeroClass = Current.ToString();
                     Utility.Write($"Great we really needed a {HeroClass} at this moment!", "red");
                     x = true;
-                }
-                                
+                }             
             }
-
             //Adding stats
             switch (HeroClass)
             {
@@ -154,31 +144,88 @@ namespace HeroVsMonster
 
     public static class GamePlay
     {
-        //Hero stats
-        static int HeroHP = Game.HeroHealth;
-        static string HeroWep = Game.HeroWeapon;
-
-        // Monster stats
-        static int MonsterHealth;
-        static string MonsterWeapon;
+        public static int MonstersBeaten;
 
         public static void Loop()
         {
 
         }
 
-        public static void Fight()
+        public static int AttackMultiplier(string _attacker)
         {
-            do
+            int _result = 0;
+            double _weapon;
+            double _attackType;
+
+            if (_attacker != Game.HeroName) // The monster attacks
             {
 
             }
-            while (HeroHealth < 0 || MonsterHealth < 0);
+            else // The hero attacks
+            {
+                foreach (string w in Game.PreferedWeapon)
+                { if (Game.HeroWeapon != w) { _weapon = 0.7; }
+                    else { _weapon = 3; break; } 
+                }
+                foreach (string a in Monsters.Defence)
+                {
+                    if (Game.AttackType != a) { _attackType = 0.7; }
+                    else { _attackType = 3; break; }
+                }
+
+            }
+
+            return _result;
         }
 
-        public static void MonsterSpawwn()
+        public static void Fight()
         {
+            Monsters.Spawn(); //Generates the Monster to fight
+            int playerAttack;
+            int monsterAttack;
 
+            Utility.Write($"A {Monsters.MonsterClass} appeard at the edge of town..");
+
+            // Fight sceen, performes dice roll, delivers damage, recives damage (loop until one survivor)
+            do
+            {
+                // Execute the attack
+                Utility.Input("Roll the dice");
+                playerAttack = Utility.DiceRoll() * AttackMultiplier(Game.HeroName);
+
+                Utility.Write($"You attack the {Monsters.MonsterClass} with your {Game.HeroWeapon}, dealing {Game.AttackType}...", "cyan");
+                Utility.Write($"The  {Monsters.MonsterClass} took {playerAttack} damage!", "red");
+
+                //Update the monster HP
+                Monsters.MonsterHealth -= playerAttack;
+
+                if (Monsters.MonsterHealth <= 0) continue;
+                // Monster attack
+                monsterAttack = Utility.DiceRoll() * AttackMultiplier(Monsters.MonsterClass);
+
+                Utility.Write($"The {Monsters.MonsterClass} attacks you with {Monsters.MonsterWeapon}, dealing {Monsters.AttackType}...", "cyan");
+                Utility.Write($"The  you reccived {monsterAttack} damage!", "red");
+                
+                // Update the HeroHP
+                Game.HeroHealth -= monsterAttack;
+            }
+            while (Game.HeroHealth > 0 && Monsters.MonsterHealth > 0);
+
+            if (Game.HeroHealth > Monsters.MonsterHealth) 
+            { 
+                Utility.Write($".. The {Monsters.MonsterClass} crumbles to the ground reciving it's final blow from your" +
+                    $" {Game.HeroWeapon} taking {playerAttack} damage!");
+                //Give Hero the xp and stats.
+                Game.HeroLevel += (Monsters.MonsterLevel % 3);
+                MonstersBeaten++;
+            }
+            else 
+            { 
+                Utility.Heading("Game Over!");
+                Utility.Write($"You where beaten by a {Monsters.MonsterClass}...");
+                Utility.Write($"Final Level: {Game.HeroLevel} \nMonsters beaten: {MonstersBeaten}");
+            }
+            Utility.Pause(); // Pause before continue the story
         }
     }
 
@@ -201,33 +248,7 @@ namespace HeroVsMonster
         }
     }
 
-    class Dice
-    {
-        int roll;
-        Random dice = new Random();
-
-        public int diceRoll()
-        {
-            roll = dice.Next(1, 6);
-            return roll;
-        }
-    }
-
-    class Character
-    {
-        int attackStrength;
-        Dice multiplier = new Dice();
-
-        public int Attack(string attacker, string opponent)
-        {
-            Console.WriteLine($"{attacker} moves in to attack {opponent} ...");
-            int attack = multiplier.diceRoll() * attackStrength;
-            return attack;
-        }
-
-    }
-
-    class Utility
+     class Utility
     {
         static string margin = "\t";
         static string indent = "\t\t";
@@ -480,6 +501,13 @@ namespace HeroVsMonster
                 Console.WriteLine(margin + _array[i]);
             }
             Console.WriteLine();
+        }
+
+        public static int DiceRoll()
+        {
+            Random dice = new Random();
+            int roll = dice.Next(1, 6);
+            return roll;
         }
     }
 

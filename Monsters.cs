@@ -6,24 +6,43 @@ using System.Threading.Tasks;
 
 namespace HeroVsMonster
 { 
-    class Monsters : Character
+    public static class Monsters
     {
-        static void MonsterDialogue(int d)
+        public static string MonsterClass;
+        public static string MonsterWeapon;
+        public static int MonsterLevel;
+        public static int MonsterHealth;
+        public static string AttackType;
+
+        public static List<string> PreferedWeapon = new List<string>();
+        public static List<string> Defence = new List<string>();
+        public static List<string> Inventory = new List<string>();
+
+        public static void Spawn()
         {
-            switch(d)
+            Random _random = new Random();
+            
+            // Selecting Monster
+            int _MonsterClass = _random.Next(0, Enum.GetValues(typeof(MonsterRace)).GetUpperBound(0));
+            var Monster = (MonsterRace)_MonsterClass;
+            MonsterClass = Monster.ToString();
+
+            // Selecting Weapon
+            int _MonsterWeapon = _random.Next(0, Enum.GetValues(typeof(MonsterWeapon)).GetUpperBound(0));
+            var Weapon = (MonsterWeapon)_MonsterWeapon;
+            MonsterWeapon = Weapon.ToString();
+
+            switch (MonsterClass)
             {
-             case 1:
-                Console.WriteLine("... ");
-                break;
-
-             case 2:
-                Console.WriteLine("... ");
-                break;
-
-             default:
-                Console.WriteLine("... ");
-                break;
+                case "Orc":
+                    Defence.Add(" ");
+                    break;
             }
+        }
+
+        static void MonsterDialogue()
+        {
+            
         }
     }
 
@@ -34,10 +53,10 @@ namespace HeroVsMonster
 
     enum MonsterWeapon
     {
-
+        WoodenClub, MakeShiftSword, TreeTrunk, GobblinWand, Pebbles
     }
 
-    class BossMonster : Monsters
+    class BossMonster
     {
         /*
         * This is the base code, from an .NET tutorial @ microsoftDocs
