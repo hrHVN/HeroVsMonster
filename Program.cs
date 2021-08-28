@@ -7,9 +7,11 @@ using System.Globalization;
  *  Add Monster class switchcases
  *  Add Monster weapon switchcase
  *  Add StoryLine
+ *      Add Monster dialogue
  *  Add Action window
  *  Add Navigation
  *  Add save/load function
+ *  
  */
 
 namespace HeroVsMonster
@@ -23,16 +25,23 @@ namespace HeroVsMonster
         }
     }
 
-    public static class Game
+    public static class Player
     {
-        public static string HeroName;
-        public static string HeroClass;
-        public static string HeroWeapon;
+        public static string Name;
+        public static string Class;
+        public static string Weapon;
         public static string AttackType;
 
-        public static int HeroLevel;
-        public static int HeroXp;
-        public static int HeroHealth;
+        public static int Level;
+        public static int Xp;
+        public static int Health;
+    }
+
+    public static class Game
+    {
+        public static int PlayerLevel;
+        public static int PlayerXp;
+        public static int PlayerHealth;
 
         public static List<string> PreferedWeapon = new List<string>();
         public static List<string> Defence = new List<string>();
@@ -85,13 +94,13 @@ namespace HeroVsMonster
         static void PlayerCreation() // Player creation, name + class = Starting specs
         {
             // Starting Level
-            HeroLevel = 1;
-            HeroXp = 0;
+            PlayerLevel = 1;
+            PlayerXp = 0;
             Wallet = 50.00;
 
             // Name Creation
-            HeroName = Utility.Input("Enter your Name Hero");
-            Utility.Write($"Welcome {HeroName}! \n We have been awaiting your arrival for some time now..", "red");
+            Player.Name = Utility.Input("Enter your Name Hero");
+            Utility.Write($"Welcome {Player.Name}! \n We have been awaiting your arrival for some time now..", "red");
             Utility.Pause();
 
             // Class selection
@@ -102,7 +111,7 @@ namespace HeroVsMonster
             while (!x) // Itterates throug PlayerClass Enum
             {
                 var Current = (PlayerClass)z;
-                Utility.Write($"\n{HeroName} are you a.. " + Current, "red");
+                Utility.Write($"\n{Player.Name} are you a.. " + Current, "red");
                 string input = Utility.Input("Select Yes or No (Y/N)");
                 Console.Clear();
 
@@ -110,54 +119,48 @@ namespace HeroVsMonster
                 else if ((input != "y") && (z == enumMax)) { z = 0; }
                 else
                 {
-                    HeroClass = Current.ToString();
-                    Utility.Write($"Great we really needed a {HeroClass} at this moment!", "red");
+                    Player.Class = Current.ToString();
+                    Utility.Write($"Great we really needed a {Player.Class} at this moment!", "red");
                     x = true;
                 }             
             }
             //Adding stats
-            switch (HeroClass)
+            switch (Player.Class)
             {
                 case "Warrior":
-                    HeroHealth = 120;
+                    Player.Health = 120;
                     PreferedWeapon.Add("GreatSword");PreferedWeapon.Add("Sword"); PreferedWeapon.Add("Mace");
                     Defence.Add("Steel");
-                    AttackType = "Sword";
+                    Player.AttackType = "Sword";
                     break;
                 case "Mage":
-                    HeroHealth = 75;
+                    PlayerHealth = 75;
                     PreferedWeapon.Add("Wand"); PreferedWeapon.Add("Staff");
                     Defence.Add("Magic");
-                    AttackType = "Archane";
+                    Player.AttackType = "Archane";
                     break;
                 case "Archer":
-                    HeroHealth = 80;
+                    Player.Health = 80;
                     PreferedWeapon.Add("Bow"); PreferedWeapon.Add("CrossBow");
                     Defence.Add("Leather"); 
-                    AttackType = "Arrow";
+                    Player.AttackType = "Arrow";
                     break;
                 case "Munk":
-                    HeroHealth = 80;
+                    Player.Health = 80;
                     PreferedWeapon.Add("Staff"); PreferedWeapon.Add("Umbrella");
                     Defence.Add("Faith");
-                    AttackType = "Holy";
+                    Player.AttackType = "Holy";
                     break;
                 default:    //Farmer
-                    HeroHealth = 150;
+                    Player.Health = 150;
                     PreferedWeapon.Add("Pitchfork"); PreferedWeapon.Add("Shovel");
                     Defence.Add("None");
-                    AttackType = "Fist";
+                    Player.AttackType = "Fist";
                     break;
             }
         }
 
-        static void Choice(string A, string B)
-        {
-            string input = Utility.Input($"{HeroName}, Which path will you Choose? {A} or {B}");
-            
-            if (input == "a") { Utility.Write($"Mighty {HeroClass} You have chosen path {A}!"); }
-            else { Utility.Write($"Mighty {HeroClass} You have chosen path {B}!"); }
-        }
+        
     }
 
     public static class GamePlay
@@ -171,17 +174,17 @@ namespace HeroVsMonster
 
         public static void LevelUp()
         {
-            int _xp = Game.HeroXp;
-            int _level = Game.HeroLevel;
+            int _xp = Game.PlayerXp;
+            int _level = Game.PlayerLevel;
 
             int _nextLevel = 100;
 
             if (_xp >= _nextLevel) 
             { 
-                Game.HeroLevel++;
+                Game.PlayerLevel++;
                 _nextLevel += (_nextLevel / 3);
 
-                Utility.Write($"Congratulations, you have leveled up!! {Game.HeroLevel}");
+                Utility.Write($"Congratulations, you have leveled up!! {Game.PlayerLevel}");
             }
             else { Utility.Write($"Next Level in {_nextLevel - _xp}!", "cyan"); }
         }
@@ -201,7 +204,7 @@ namespace HeroVsMonster
             List<string> _preferdWeapon = new List<string>();
 
             // The monster attacks
-            if (_attacker != Game.HeroName) 
+            if (_attacker != Player.Name) 
             {
                 _attackType = Monsters.AttackType;
                 _level = Monsters.MonsterLevel;
@@ -212,9 +215,9 @@ namespace HeroVsMonster
             // The hero attacks
             else
             {
-                _attackType = Game.AttackType;
-                _level = Game.HeroLevel;
-                _weapon = Game.HeroWeapon;
+                _attackType = Player.AttackType;
+                _level = Player.Level;
+                _weapon = Player.Weapon;
                 foreach (string x in Monsters.Defence) { _defenceType.Add(x); }
                 foreach (string pw in Game.PreferedWeapon) { _preferdWeapon.Add(pw); }
             }
@@ -222,7 +225,7 @@ namespace HeroVsMonster
             // AttackType vs DefenceType value selector
             foreach (string a in _defenceType)
             {
-                if ((_attackType == "Blunt") || (_attackType == "BluntFist") || (_attackType == "RangedBlunt"))
+                if (_attackType == "Blunt")
                 {
                     switch (a)
                     {
@@ -255,7 +258,7 @@ namespace HeroVsMonster
                             break;
                     }
                 }
-                else if ((Game.AttackType == "RangedSharp") || (Game.AttackType == "Sharp"))
+                else if (Player.AttackType == "Sharp")
                 {
                     switch (a)
                     {
@@ -288,7 +291,7 @@ namespace HeroVsMonster
                             break;
                     }
                 }
-                else if ((Game.AttackType == "MagicArchane"))
+                else if ((Player.AttackType == "Magic"))
                 {
                     switch (a)
                     {
@@ -321,7 +324,7 @@ namespace HeroVsMonster
                             break;
                     }
                 }
-                else if ((Game.AttackType == "MagicHoly")) 
+                else if ((Player.AttackType == "Holy")) 
                 {
                     switch (a)
                     {
@@ -411,9 +414,9 @@ namespace HeroVsMonster
             {
                 // Execute the attack
                 Utility.Input("Roll the dice");
-                playerAttack = Utility.DiceRoll() * AttackMultiplier(Game.HeroName);
+                playerAttack = Utility.DiceRoll() * AttackMultiplier(Player.Name);
 
-                Utility.Write($"You attack the {Monsters.MonsterClass} with your {Game.HeroWeapon}, dealing {Game.AttackType}...", "cyan");
+                Utility.Write($"You attack the {Monsters.MonsterClass} with your {Player.Weapon}, dealing {Player.AttackType}...", "cyan");
                 Utility.Write($"The  {Monsters.MonsterClass} took {playerAttack} damage!", "red");
 
                 //Update the monster HP
@@ -427,17 +430,17 @@ namespace HeroVsMonster
                 Utility.Write($"The  you reccived {monsterAttack} damage!", "red");
                 
                 // Update the HeroHP
-                Game.HeroHealth -= monsterAttack;
+                Player.Health -= monsterAttack;
             }
-            while (Game.HeroHealth > 0 && Monsters.MonsterHealth > 0);
+            while (Player.Health > 0 && Monsters.MonsterHealth > 0);
 
             // Wictory loop
-            if (Game.HeroHealth > Monsters.MonsterHealth) 
+            if (Player.Health > Monsters.MonsterHealth) 
             { 
                 Utility.Write($".. The {Monsters.MonsterClass} crumbles to the ground reciving it's final blow from your" +
-                    $" {Game.HeroWeapon} taking {playerAttack} damage!");
+                    $" {Player.Weapon} taking {playerAttack} damage!");
                 //Give Hero the xp and stats.
-                Game.HeroXp += (Monsters.MonsterLevel % 3);
+                Player.Xp += (Monsters.MonsterLevel % 3);
                 MonstersBeaten++;
             }
             //Game Over
@@ -445,13 +448,22 @@ namespace HeroVsMonster
             { 
                 Utility.Heading("Game Over!");
                 Utility.Write($"You where beaten by a {Monsters.MonsterClass}...");
-                Utility.Write($"Final Level: {Game.HeroLevel} \nMonsters beaten: {MonstersBeaten}");
+                Utility.Write($"Final Level: {Player.Level} \nMonsters beaten: {MonstersBeaten}");
             }
             
             LevelUp();
             Utility.Pause(); // Pause before continue the story
         }
+
+        static void Choice(string A, string B)
+        {
+            string input = Utility.Input($"{Player.Name}, Which path will you Choose? {A} or {B}");
+
+            if (input == "a") { Utility.Write($"Mighty {Player.Class} You have chosen path {A}!"); }
+            else { Utility.Write($"Mighty {Player.Class} You have chosen path {B}!"); }
+        }
     }
+
 
     public class Item
     {
@@ -733,52 +745,5 @@ namespace HeroVsMonster
             int roll = dice.Next(1, 6);
             return roll;
         }
-    }
-
-    public static class EnumHelper
-    {
-        public static T GetEnumValue<T>(string str) where T : struct, IConvertible
-        {
-            Type enumType = typeof(T);
-            
-            if (!enumType.IsEnum)
-            {
-                throw new Exception("T must be an Enumeration type.");
-            }
-            T val;
-            return Enum.TryParse<T>(str, true, out val) ? val : default(T);
-        }
-
-        public static T GetEnumValue<T>(int intValue) where T : struct, IConvertible
-        {
-            Type enumType = typeof(T);
-
-            if (!enumType.IsEnum)
-            {
-                throw new Exception("T must be an Enumeration type.");
-            }
-            T val;
-            return (T)Enum.ToObject(enumType, intValue);
-        }
-    }
-
-    public enum PlayerClass
-    {
-        Farmer, Warrior, Mage, Archer, Munk
-    }
-
-    public enum PlayerWeapons
-    {
-        PitchFork, Sword, GreatSword, Mace, Staff, Wand, Shovel, Bow, CrossBow, Umbrella, Fists
-    }
-
-    public enum DefenceType
-    {
-        None, Faith, Leather, ArchaneRobe, Steel, ThickHide, Copper, ChainMail, HolyRobe
-    }
-
-    public enum AttackType
-    {
-        BluntFist, Blunt, RangedSharp, RangedBlunt, MagicArchane, MagicHoly, Sharp
     }
 }

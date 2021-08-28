@@ -33,9 +33,9 @@ namespace HeroVsMonster
             MonsterWeapon = Weapon.ToString();
 
             //Setting the Monster Level
-            int _maxLevel = (Game.HeroLevel > 20) ? Game.HeroLevel * 3 : 5;
-            int _minLevel = (Game.HeroLevel < 20) ? 1 : 20;
-            MonsterLevel = Game.HeroLevel + _random.Next(_minLevel,_maxLevel);
+            int _maxLevel = (Game.PlayerLevel > 20) ? Game.PlayerLevel * 3 : 5;
+            int _minLevel = (Game.PlayerLevel < 20) ? 1 : 20;
+            MonsterLevel = Game.PlayerLevel + _random.Next(_minLevel,_maxLevel);
 
             switch (MonsterClass)
             {
@@ -65,15 +65,7 @@ namespace HeroVsMonster
         }
     }
 
-    enum MonsterRace
-    {
-        Orc, Gobblin, Giant, Wolf, Sheep
-    }
-
-    enum MonsterWeapon
-    {
-        WoodenClub, MakeShiftSword, TreeTrunk, GobblinWand, Pebbles, Fists
-    }
+    
 
     class BossMonster
     {
