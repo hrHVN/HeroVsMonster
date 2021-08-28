@@ -39,10 +39,20 @@ namespace HeroVsMonster
 
             switch (MonsterClass)
             {
-                case "Orc":
+                default: //"Orc"
                     Defence.Add("ThickHide");
                     MonsterHealth = 75 * MonsterLevel;
+                    // Defence.Add();
+                    // PreferedWeapon.Add();
+                    // Inventory.Add();
+                    // Purse.Add();
                     break;
+                case "Gobblin":
+                case "Giant":
+                case "Wizard":
+                case "FallenAngel":
+                case "DarkElf":
+                case "BlackDwarves":
             }
 
             switch (MonsterWeapon)
