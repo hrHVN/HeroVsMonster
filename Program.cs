@@ -471,6 +471,25 @@ namespace HeroVsMonster
 
             string _defence;
 
+            /*
+            defenceType_Vs_DamageType = (Blunt - Sharp - Magic - Holy)
+            None = 1 - 1 - 1 - 1;
+            Archane = 1 - 2 - 0.3 - 0.7;
+            Faith = 1 - 2- 0.7 - 0.3;
+            Steel = 0.3 - 0.3 2 - 2;
+            Leather = 0.7 - 0.5 - 1.5 1.5;
+            ChainMail = 0.5 - 0.3 - 2 - 2;
+            */
+            
+            /*
+            bool Parry = (DamageType == (ranged || Magic || Holy)) ? false : true;
+            _parry = (1 == _random.next(0,1)) ? -0.5 : 0.0;
+            */
+            
+            /*
+            if Inventory.contains("Oil") Then explode + Firedamage
+            */
+            
             if (attacker == Player.Class) 
             { 
                 _class = Player.Class;
