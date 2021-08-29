@@ -26,7 +26,7 @@ namespace HeroVsMonster
 
     public enum AttackType
     {
-        Blunt, Ranged, Magic, Holy, Sharp
+        Blunt, Magic, Holy, Sharp
     }
 
     public enum PlayerWeapons
@@ -34,7 +34,7 @@ namespace HeroVsMonster
         PitchFork, Sword, GreatSword, Mace, Staff, Wand, Shovel, Bow, CrossBow, Umbrella, Fists
     }
 
-    public enum MonsterWeapon
+    public enum MonsterWeapon 
     {
         WoodenClub, MakeShiftSword, TreeTrunk, GobblinWand, Pebbles, Fists
     }

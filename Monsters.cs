@@ -8,15 +8,15 @@ namespace HeroVsMonster
 { 
     public static class Monsters
     {
-        public static string MonsterClass;
-        public static string MonsterWeapon;
-        public static int MonsterLevel;
-        public static int MonsterHealth;
-        public static string AttackType;
+        public static string Class;
+        public static string Weapon;
+        public static int Level;
+        public static int Health;
 
         public static List<string> PreferedWeapon = new List<string>();
         public static List<string> Defence = new List<string>();
         public static List<string> Inventory = new List<string>();
+        public static double Purse;
 
         public static void Spawn()
         {
@@ -25,42 +25,269 @@ namespace HeroVsMonster
             // Selecting Monster
             int _MonsterClass = _random.Next(0, Enum.GetValues(typeof(MonsterRace)).GetUpperBound(0));
             var Monster = (MonsterRace)_MonsterClass;
-            MonsterClass = Monster.ToString();
-
-            // Selecting Weapon
-            int _MonsterWeapon = _random.Next(0, Enum.GetValues(typeof(MonsterWeapon)).GetUpperBound(0));
-            var Weapon = (MonsterWeapon)_MonsterWeapon;
-            MonsterWeapon = Weapon.ToString();
+            Class = Monster.ToString();
 
             //Setting the Monster Level
-            int _maxLevel = (Game.PlayerLevel > 20) ? Game.PlayerLevel * 3 : 5;
-            int _minLevel = (Game.PlayerLevel < 20) ? 1 : 20;
-            MonsterLevel = Game.PlayerLevel + _random.Next(_minLevel,_maxLevel);
+            int _maxLevel = (Player.Level > 20) ? Player.Level * 3 : 5;
+            int _minLevel = (Player.Level < 20) ? 1 : 20;
+            Level = Player.Level + _random.Next(_minLevel, _maxLevel);
 
-            switch (MonsterClass)
+            switch (Class)
             {
                 default: //"Orc"
                     Defence.Add("ThickHide");
-                    MonsterHealth = 75 * MonsterLevel;
-                    // Defence.Add();
+                    Health = 75 * Level;
+                    Purse = _random.Next(0, (Level * 3));
+
+                    //Adds DefenceAttributes
+                    if (Level % 3 > 0)
+                    {
+                        for (int i = 0; i < (Level % 3); i++)
+                        {
+                            int _defence = _random.Next(0, Enum.GetValues(typeof(DefenceType)).GetUpperBound(0));
+                            string _defT = ((DefenceType)_defence).ToString();
+
+                            if (Defence.Contains(_defT)) { i--; continue; }
+                            else { Defence.Add(_defT); }
+                        }
+                    }
+                    else
+                    {
+                        int _defence = _random.Next(0, Enum.GetValues(typeof(DefenceType)).GetUpperBound(0));
+                        Defence.Add(((DefenceType)_defence).ToString());
+                    }
+
                     // PreferedWeapon.Add();
+                    PreferedWeapon.Add("MakeShiftSword"); PreferedWeapon.Add("Fists"); PreferedWeapon.Add("Mace");
                     // Inventory.Add();
-                    // Purse.Add();
+
+                    // Selecting Weapon
+                    int _MonsterWeapon = _random.Next(0, Enum.GetValues(typeof(MonsterWeapon)).GetUpperBound(0));
+                    Weapon = ((MonsterWeapon)_MonsterWeapon).ToString();
+
                     break;
+
                 case "Gobblin":
+                    Defence.Add("Leather");
+                    Health = 35 * Level;
+                    Purse = _random.Next(0, (Level * 3));
+
+                    //Adds DefenceAttributes
+                    if (Level % 3 > 0)
+                    {
+                        for (int i = 0; i < (Level % 3); i++)
+                        {
+                            int _defence = _random.Next(0, Enum.GetValues(typeof(DefenceType)).GetUpperBound(0));
+                            string _defT = ((DefenceType)_defence).ToString();
+
+                            if (Defence.Contains(_defT)) { i--; continue; }
+                            else { Defence.Add(_defT); }
+                        }
+                    }
+                    else
+                    {
+                        int _defence = _random.Next(0, Enum.GetValues(typeof(DefenceType)).GetUpperBound(0));
+                        Defence.Add(((DefenceType)_defence).ToString());
+                    }
+
+                    // PreferedWeapon.Add();
+                    PreferedWeapon.Add("GobblinWand"); PreferedWeapon.Add("Pebbles"); PreferedWeapon.Add("WoodenClub");
+                    // Inventory.Add();
+
+                    // Selecting Weapon
+                    _MonsterWeapon = _random.Next(0, Enum.GetValues(typeof(MonsterWeapon)).GetUpperBound(0));
+                    Weapon = ((MonsterWeapon)_MonsterWeapon).ToString();
+
+                    break;
+
                 case "Giant":
+                    Defence.Add("ThickHide");
+                    Health = 105 * Level;
+                    Purse = _random.Next(0, (Level * 3));
+
+                    //Adds DefenceAttributes
+                    if (Level % 3 > 0)
+                    {
+                        for (int i = 0; i < (Level % 3); i++)
+                        {
+                            int _defence = _random.Next(0, Enum.GetValues(typeof(DefenceType)).GetUpperBound(0));
+                            string _defT = ((DefenceType)_defence).ToString();
+
+                            if (Defence.Contains(_defT)) { i--; continue; }
+                            else { Defence.Add(_defT); }
+                        }
+                    }
+                    else
+                    {
+                        int _defence = _random.Next(0, Enum.GetValues(typeof(DefenceType)).GetUpperBound(0));
+                        Defence.Add(((DefenceType)_defence).ToString());
+                    }
+
+                    // PreferedWeapon.Add();
+                    PreferedWeapon.Add("TreeTrunk"); PreferedWeapon.Add("WoodenClub");
+                    // Inventory.Add();
+
+                    // Selecting Weapon
+                    _MonsterWeapon = _random.Next(0, Enum.GetValues(typeof(MonsterWeapon)).GetUpperBound(0));
+                    Weapon = ((MonsterWeapon)_MonsterWeapon).ToString();
+
+                    break;
+
                 case "Wizard":
+                    Defence.Add("Archane");
+                    Health = 75 * Level;
+                    Purse = _random.Next(0, (Level * 3));
+
+                    //Adds DefenceAttributes
+                    if (Level % 3 > 0)
+                    {
+                        for (int i = 0; i < (Level % 3); i++)
+                        {
+                            int _defence = _random.Next(0, Enum.GetValues(typeof(DefenceType)).GetUpperBound(0));
+                            string _defT = ((DefenceType)_defence).ToString();
+
+                            if (Defence.Contains(_defT)) { i--; continue; }
+                            else { Defence.Add(_defT); }
+                        }
+                    }
+                    else
+                    {
+                        int _defence = _random.Next(0, Enum.GetValues(typeof(DefenceType)).GetUpperBound(0));
+                        Defence.Add(((DefenceType)_defence).ToString());
+                    }
+
+                    // PreferedWeapon.Add();
+                    PreferedWeapon.Add("GobblinWand"); PreferedWeapon.Add("Wand"); PreferedWeapon.Add("Staff");
+                    // Inventory.Add();
+
+                    // Selecting Weapon
+                    List<string> _weaponsToChoose = new List<string>();
+                    for (int i = 0; i < Enum.GetValues(typeof(MonsterWeapon)).GetUpperBound(0); i++) 
+                    {
+                        _weaponsToChoose.Add(((MonsterWeapon)i).ToString());
+                    }
+                    for (int i = 0; i < Enum.GetValues(typeof(PlayerWeapons)).GetUpperBound(0); i++)
+                    {
+                        _weaponsToChoose.Add(((PlayerWeapons)i).ToString());
+                    }
+                    Weapon = _weaponsToChoose[_random.Next(0, _weaponsToChoose.Count())];
+
+                    break;
+
                 case "FallenAngel":
+                    Defence.Add("Archane");
+                    Health = 95 * Level;
+                    Purse = _random.Next(0, (Level * 3));
+
+                    //Adds DefenceAttributes
+                    if (Level % 3 > 0)
+                    {
+                        for (int i = 0; i < (Level % 3); i++)
+                        {
+                            int _defence = _random.Next(0, Enum.GetValues(typeof(DefenceType)).GetUpperBound(0));
+                            string _defT = ((DefenceType)_defence).ToString();
+
+                            if (Defence.Contains(_defT)) { i--; continue; }
+                            else { Defence.Add(_defT); }
+                        }
+                    }
+                    else
+                    {
+                        int _defence = _random.Next(0, Enum.GetValues(typeof(DefenceType)).GetUpperBound(0));
+                        Defence.Add(((DefenceType)_defence).ToString());
+                    }
+
+                    // PreferedWeapon.Add();
+                    PreferedWeapon.Add("Sword"); PreferedWeapon.Add("Bow"); PreferedWeapon.Add("CrossBow");
+                    PreferedWeapon.Add("GreatSword");
+                    // Inventory.Add();
+
+                    // Selecting Weapon
+                    _weaponsToChoose = new List<string>();
+                    for (int i = 0; i < Enum.GetValues(typeof(MonsterWeapon)).GetUpperBound(0); i++)
+                    {
+                        _weaponsToChoose.Add(((MonsterWeapon)i).ToString());
+                    }
+                    for (int i = 0; i < Enum.GetValues(typeof(PlayerWeapons)).GetUpperBound(0); i++)
+                    {
+                        _weaponsToChoose.Add(((PlayerWeapons)i).ToString());
+                    }
+                    Weapon = _weaponsToChoose[_random.Next(0, _weaponsToChoose.Count())];
+
+                    break;
+
                 case "DarkElf":
+                    Defence.Add("ChainMail");
+                    Health = 85 * Level;
+                    Purse = _random.Next(0, (Level * 3));
+
+                    //Adds DefenceAttributes
+                    if (Level % 3 > 0)
+                    {
+                        for (int i = 0; i < (Level % 3); i++)
+                        {
+                            int _defence = _random.Next(0, Enum.GetValues(typeof(DefenceType)).GetUpperBound(0));
+                            string _defT = ((DefenceType)_defence).ToString();
+
+                            if (Defence.Contains(_defT)) { i--; continue; }
+                            else { Defence.Add(_defT); }
+                        }
+                    }
+                    else
+                    {
+                        int _defence = _random.Next(0, Enum.GetValues(typeof(DefenceType)).GetUpperBound(0));
+                        Defence.Add(((DefenceType)_defence).ToString());
+                    }
+
+                    // PreferedWeapon.Add();
+                    PreferedWeapon.Add("Staff"); PreferedWeapon.Add("Bow"); PreferedWeapon.Add("GreatSword");
+                    // Inventory.Add();
+                    break;
+
                 case "BlackDwarves":
+                    Defence.Add("Steel");
+                    Health = 105 * Level;
+                    Purse = _random.Next(0, (Level * 3));
+
+                    //Adds DefenceAttributes
+                    if (Level % 3 > 0)
+                    {
+                        for (int i = 0; i < (Level % 3); i++)
+                        {
+                            int _defence = _random.Next(0, Enum.GetValues(typeof(DefenceType)).GetUpperBound(0));
+                            string _defT = ((DefenceType)_defence).ToString();
+
+                            if (Defence.Contains(_defT)) { i--; continue; }
+                            else { Defence.Add(_defT); }
+                        }
+                    }
+                    else
+                    {
+                        int _defence = _random.Next(0, Enum.GetValues(typeof(DefenceType)).GetUpperBound(0));
+                        Defence.Add(((DefenceType)_defence).ToString());
+                    }
+
+                    // PreferedWeapon.Add();
+                    PreferedWeapon.Add("Sword"); PreferedWeapon.Add("CrossBow"); PreferedWeapon.Add("GreatSword");
+                    PreferedWeapon.Add("Mace"); PreferedWeapon.Add("Fists");
+                    // Inventory.Add();
+
+                    // Selecting Weapon
+                    _weaponsToChoose = new List<string>();
+                    for (int i = 0; i < Enum.GetValues(typeof(MonsterWeapon)).GetUpperBound(0); i++)
+                    {
+                        _weaponsToChoose.Add(((MonsterWeapon)i).ToString());
+                    }
+                    for (int i = 0; i < Enum.GetValues(typeof(PlayerWeapons)).GetUpperBound(0); i++)
+                    {
+                        _weaponsToChoose.Add(((PlayerWeapons)i).ToString());
+                    }
+                    Weapon = _weaponsToChoose[_random.Next(0, _weaponsToChoose.Count())];
+
+                    break;
             }
 
-            switch (MonsterWeapon)
-            {
-                case "WoodenClub":
-                    AttackType = "Blunt";
-                    break;
-            }
+            
 
             // Adds a predefined random selection of items for the monster;
             string[] _ekstraDefence = { "Leather Armor" };
