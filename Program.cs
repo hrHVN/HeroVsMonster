@@ -93,6 +93,8 @@ namespace HeroVsMonster
 
         static void PlayerCreation() // Player creation, name + class = Starting specs
         {
+            Random _random = new Random();
+
             // Starting Level
             Player.Level = 1;
             Player.Xp = 0;
@@ -130,39 +132,56 @@ namespace HeroVsMonster
             switch (Player.Class)
             {
                 case "Warrior":
+                    Defence.Add("Steel");
                     Player.Health = 120;
                     PreferedWeapon.Add("GreatSword"); PreferedWeapon.Add("Sword"); PreferedWeapon.Add("Mace");
-                    Defence.Add("Steel");
-                    Player.AttackType = "Sword";
+                    
+                    // Selecting Weapon
+                    int _PlayerWeapon = _random.Next(0, Enum.GetValues(typeof(PlayerWeapons)).GetUpperBound(0));
+                    Player.Weapon = ((PlayerWeapons)_PlayerWeapon).ToString();
                     break;
+
                 case "Mage":
                     Player.Health = 75;
                     PreferedWeapon.Add("Wand"); PreferedWeapon.Add("Staff");
                     Defence.Add("Magic");
-                    Player.AttackType = "Archane";
+
+                    // Selecting Weapon
+                    _PlayerWeapon = _random.Next(0, Enum.GetValues(typeof(PlayerWeapons)).GetUpperBound(0));
+                    Player.Weapon = ((PlayerWeapons)_PlayerWeapon).ToString();
                     break;
+
                 case "Archer":
                     Player.Health = 80;
                     PreferedWeapon.Add("Bow"); PreferedWeapon.Add("CrossBow");
                     Defence.Add("Leather");
-                    Player.AttackType = "Arrow";
+
+                    // Selecting Weapon
+                    _PlayerWeapon = _random.Next(0, Enum.GetValues(typeof(PlayerWeapons)).GetUpperBound(0));
+                    Player.Weapon = ((PlayerWeapons)_PlayerWeapon).ToString();
                     break;
+
                 case "Munk":
                     Player.Health = 80;
                     PreferedWeapon.Add("Staff"); PreferedWeapon.Add("Umbrella");
                     Defence.Add("Faith");
-                    Player.AttackType = "Holy";
+
+                    // Selecting Weapon
+                    _PlayerWeapon = _random.Next(0, Enum.GetValues(typeof(PlayerWeapons)).GetUpperBound(0));
+                    Player.Weapon = ((PlayerWeapons)_PlayerWeapon).ToString();
                     break;
+
                 default:    //Farmer
                     Player.Health = 150;
                     PreferedWeapon.Add("Pitchfork"); PreferedWeapon.Add("Shovel");
                     Defence.Add("None");
-                    Player.AttackType = "Fist";
+
+                    // Selecting Weapon
+                    _PlayerWeapon = _random.Next(0, Enum.GetValues(typeof(PlayerWeapons)).GetUpperBound(0));
+                    Player.Weapon = ((PlayerWeapons)_PlayerWeapon).ToString();
                     break;
             }
         }
-
-
     }
 
     public static class GamePlay
@@ -209,7 +228,7 @@ namespace HeroVsMonster
             // The monster attacks
             if (_attacker != Player.Name)
             {
-                _attackType = Monsters.AttackType;
+                _attackType = Monsters.Class;
                 _level = Monsters.Level;
                 _weapon = Monsters.Weapon;
                 foreach (string x in Game.Defence) { _defenceType.Add(x); }
@@ -218,17 +237,22 @@ namespace HeroVsMonster
             // The hero attacks
             else
             {
-                _attackType = Player.AttackType;
+                _attackType = Player.Class;
                 _level = Player.Level;
                 _weapon = Player.Weapon;
                 foreach (string x in Monsters.Defence) { _defenceType.Add(x); }
                 foreach (string pw in Game.PreferedWeapon) { _preferdWeapon.Add(pw); }
             }
 
+            string[] bluntWeapons = { "Mace", "Staff", "Fists", "Umbrella", "WoodenClub", "TreeTrunk", "Pebbles", "Staff", "Fists" };
+            string[] magicWeapons = { "Wand", "GobblinWand", "Staff" };
+            string[] holyWeapons = { "Wand", "Umbrella", "Staff" };
+            string[] sharpWeapons = { "PitchFork", "Sword", "GreatSword", "Shovel", "Bow", "CrossBow", "MakeShiftSword" };
+
             // AttackType vs DefenceType value selector
             foreach (string a in _defenceType)
             {
-                if (_attackType == "Blunt")
+                if (Array.Exists(bluntWeapons, element => element ==_attackType))
                 {
                     switch (a)
                     {
@@ -261,7 +285,7 @@ namespace HeroVsMonster
                             break;
                     }
                 }
-                else if (Player.AttackType == "Sharp")
+                else if (Array.Exists(sharpWeapons, element => element == _attackType))
                 {
                     switch (a)
                     {
@@ -294,7 +318,7 @@ namespace HeroVsMonster
                             break;
                     }
                 }
-                else if ((Player.AttackType == "Magic"))
+                else if (Array.Exists(magicWeapons, element => element == _attackType))
                 {
                     switch (a)
                     {
@@ -327,7 +351,7 @@ namespace HeroVsMonster
                             break;
                     }
                 }
-                else if ((Player.AttackType == "Holy"))
+                else if (Array.Exists(holyWeapons, element => element == _attackType))
                 {
                     switch (a)
                     {
@@ -410,7 +434,11 @@ namespace HeroVsMonster
             int playerAttack;
             int monsterAttack;
 
+            int damageTaken = 0;
+            int damageGiven = 0;
+
             Utility.Write($"A {Monsters.Class} appeard at the edge of town..");
+            
 
             // Fight sceen, performes dice roll, delivers damage, recives damage (loop until one survivor)
             do
@@ -418,22 +446,27 @@ namespace HeroVsMonster
                 // Execute the attack
                 Utility.Input("Roll the dice");
                 playerAttack = Utility.DiceRoll() * AttackMultiplier(Player.Name);
+                damageGiven += playerAttack;
 
                 Utility.Write($"You attack the {Monsters.Class} with your {Player.Weapon}...", "cyan");
                 Utility.Write($"The  {Monsters.Class} took {playerAttack} damage!", "red");
 
                 //Update the monster HP
                 Monsters.Health -= playerAttack;
+                Console.ReadKey();
 
                 if (Monsters.Health <= 0) continue;
                 // Monster attack
                 monsterAttack = Utility.DiceRoll() * AttackMultiplier(Monsters.Class);
+                damageTaken += monsterAttack;
 
                 Utility.Write($"The {Monsters.Class} attacks you with {Monsters.Weapon}...", "cyan");
                 Utility.Write($"The  you reccived {monsterAttack} damage!", "red");
 
                 // Update the HeroHP
                 Player.Health -= monsterAttack;
+                Console.ReadKey();
+
             }
             while (Player.Health > 0 && Monsters.Health > 0);
 
@@ -445,16 +478,18 @@ namespace HeroVsMonster
                 //Give Hero the xp and stats.
                 Player.Xp += (Monsters.Level % 3);
                 MonstersBeaten++;
+                Utility.Write($"You dealt {damageGiven} damage to the {Monsters.Class} with your {Player.Weapon}.");
+                LevelUp();
             }
             //Game Over
             else
             {
                 Utility.Heading("Game Over!");
-                Utility.Write($"You where beaten by a {Monsters.Class}...");
-                Utility.Write($"Final Level: {Player.Level} \nMonsters beaten: {MonstersBeaten}");
+                Utility.Write($"You where beaten by a {Monsters.Class}, it has {Monsters.Health} Hp left...");
+                Utility.Write($"\nYou reached Level: {Player.Level} \nYou hav beaten: {MonstersBeaten} Monsters! \nIn the end you delt  " +
+                    $"{damageGiven} damage to {Monsters.Class}, and took {damageTaken} damage from the monster");
             }
 
-            LevelUp();
             Utility.Pause(); // Pause before continue the story
         }
 
@@ -491,20 +526,21 @@ namespace HeroVsMonster
             if Inventory.contains("Oil") Then explode + Firedamage
             */
             
-
+            
             do
             {
                 if ((Player.Class == "Mage") || (Player.Class == "Munk")) { }
 
                 foreach (string d in Monsters.Defence)
                 {
-                    for (int di = 0; di < 5; di++) {
-                        if (_defenceDamage[di,0] == d)
+                    for (int di = 0; di < 5; di++)
+                    {
+                        if (_defenceDamage[di, 0] == d)
                         {
-                            if (Player.Weapon)
+                            //if (Player.Weapon) { }
                         }
                     }
-
+                }
 
                 if (Monsters.Health <= 0) continue;
 
@@ -512,6 +548,7 @@ namespace HeroVsMonster
             while (Player.Health > 0 && Monsters.Health > 0);
 
             // Wictory loop
+            /*
             if (Player.Health > Monsters.Health)
             {
                 Utility.Write($".. The {Monsters.Class} crumbles to the ground reciving it's final blow from your" +
@@ -526,11 +563,11 @@ namespace HeroVsMonster
                 Utility.Heading("Game Over!");
                 Utility.Write($"You where beaten by a {Monsters.Class}...");
                 Utility.Write($"Final Level: {Player.Level} \nMonsters beaten: {MonstersBeaten}");
-            }
+            }*/
 
         }
 
-            static void Choice(string A, string B)
+        static void Choice(string A, string B)
         {
             string input = Utility.Input($"{Player.Name}, Which path will you Choose? {A} or {B}");
 
