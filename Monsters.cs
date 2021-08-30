@@ -28,7 +28,7 @@ namespace HeroVsMonster
             Class = Monster.ToString();
 
             //Setting the Monster Level
-            int _maxLevel = (Player.Level > 20) ? Player.Level * 3 : 5;
+            int _maxLevel = (Player.Level > 20) ? Player.Level * 3 : Player.Level * 5;
             int _minLevel = (Player.Level < 20) ? 1 : 20;
             Level = Player.Level + _random.Next(_minLevel, _maxLevel);
 
@@ -287,13 +287,10 @@ namespace HeroVsMonster
                     break;
             }
 
-            
-
             // Adds a predefined random selection of items for the monster;
             string[] _ekstraDefence = { "Leather Armor" };
             int _ekstra = _random.Next(1, _ekstraDefence.GetLength(0));
             for (int i = 0; i < _ekstra; i++) { Defence.Add(_ekstraDefence[i]); }
-            
         }
 
         static void MonsterDialogue()
