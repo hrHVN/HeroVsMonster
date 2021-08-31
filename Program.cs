@@ -5,9 +5,7 @@ using System.IO;
 using System.Text;
 
 /*
- *  To DO;
- *  Add Monster class switchcases
- *  Add Monster weapon switchcase
+ *  To DO
  *  Add StoryLine
  *      Add Monster dialogue
  *  Add Action window
@@ -56,9 +54,10 @@ namespace HeroVsMonster
             int _PlayerWeapon = _random.Next(0, Enum.GetValues(typeof(PlayerWeapons)).GetUpperBound(0));
             Player.Weapon = ((PlayerWeapons)_PlayerWeapon).ToString();
 
-            Utility.Heading("\nStarting a New game");
+            Utility.Heading(Utility.Center("\nStarting a New game"));
             // Name Creation
-            Player.Name = Utility.Center(Utility.Input("\nEnter your Name Hero"));
+            Console.Write("\n\tEnter your Name Hero: ");
+            Player.Name = Console.ReadLine();
             Utility.Write($"\nWelcome {Player.Name}! We have been awaiting your arrival for some time now..");
             Console.ReadKey();
 
@@ -198,7 +197,8 @@ namespace HeroVsMonster
 
         static void LoadGame(string _save) 
         {
-            StreamReader sr = new StreamReader($@"\\saves\{_save}.txt");
+            string _path = @"C:\Users\Andreas\source\repos\HeroVsMonster\saves\";
+            StreamReader sr = new StreamReader(_save);
 
             Player.Name = sr.ReadLine();
             Player.Health = Convert.ToInt16(sr.ReadLine());
@@ -224,7 +224,10 @@ namespace HeroVsMonster
         {
             try
             {
-                StreamWriter sw = new StreamWriter($@"\\saves\{Player.Name}.txt", false);
+            // C: \Users\Andreas\source\repos\HeroVsMonster\saves\
+
+                string _path = @"C:\Users\Andreas\source\repos\HeroVsMonster\saves\";
+                StreamWriter sw = new StreamWriter(_path + $"{Player.Name}.txt", false);
                 sw.WriteLine(Player.Name);
                 sw.WriteLine(Player.Health);
                 sw.WriteLine(Player.Class);
@@ -239,7 +242,6 @@ namespace HeroVsMonster
 
             Utility.Write(Utility.Center("Game Saved!"), "cyan");
             Utility.Pause();
-            ConsoleStartMenu();
         }
 
         static void ExitGame() { Environment.Exit(1); }
@@ -289,9 +291,13 @@ namespace HeroVsMonster
             Console.Clear();
             Utility.Title("Hero Vs Monster" , "Survival of the luckiest...");
 
-            Console.Write("\nMain Menue");
+            Utility.Write(Utility.Center("\nMain Menue"));
             int _int = 1; // Menue Choice
-            foreach (string M in _menuList) { Utility.Center($"\n{M} < {_int} >"); _int++; }
+            foreach (string M in _menuList) 
+            { 
+                Utility.Write(Utility.Center($"\n{M} < {_int} >")); 
+                _int++; 
+            }
 
             Input = Console.ReadLine();
             if (int.TryParse(Input, out Choice))
@@ -309,29 +315,41 @@ namespace HeroVsMonster
                             Console.Clear();
                             Player.PlayerCreation();
                             break;
+
                         case 2:
                             Console.Clear();
-                            string[] _saves = Directory.GetFiles(@"\\saves", "*.txt");
-
                             Utility.Title("Hero Vs Monster", "Survival of the luckiest...");
                             Console.Write("\nLoad Game");
-
-                            int _intSaves = 1; // Menue Choice
-                            foreach (string S in _saves) { Utility.Center($"\n{S} < {_intSaves} >"); _intSaves++; }
-                           
-                            string _inputSave = Console.ReadLine();
-                            if (int.TryParse(_inputSave, out Choice))
+                            try
                             {
-                                if (Choice > _menuList.Length)
+                                string[] _saves = Directory.GetFiles(@"C:\Users\Andreas\source\repos\HeroVsMonster\saves\", "*.txt");
+
+                                int _intSaves = 1; // Menue Choice
+                                foreach (string S in _saves) { Utility.Write(Utility.Center($"\n{S} < {_intSaves} >")); _intSaves++; }
+
+                                string _inputSave = Console.ReadLine();
+                                if (int.TryParse(_inputSave, out Choice))
                                 {
-                                    Console.WriteLine($"Please enter a number 1-{_menuList.Length}.");
-                                }
-                                else
-                                {
-                                    LoadGame(_saves[Choice]);
+                                    if (Choice > _menuList.Length)
+                                    {
+                                        Utility.Write($"Please enter a number 1-{_menuList.Length}.");
+                                        break;
+                                    }
+                                    else
+                                    {
+                                        int _saveGame = Choice - 1; 
+                                        LoadGame(_saves[_saveGame]);
+                                    }
                                 }
                             }
+                            catch 
+                            {
+                                Utility.Write("You have no prior Savegames..");
+                                Console.ReadKey();
+                                ConsoleStartMenu();
+                            }
                             break;
+
                          default:
                             //if a number other than 1-5 is entered, request
                             //player enter a number in that range
@@ -651,6 +669,7 @@ namespace HeroVsMonster
                 MonstersBeaten++;
                 Utility.Write($"You dealt {damageGiven} damage to the {Monsters.Class} with your {Player.Weapon}.");
                 LevelUp();
+                Game.SaveGame();
             }
             //Game Over
             else
