@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
+using System.Text;
 
 /*
- *  To DO;
- *  Add Monster class switchcases
- *  Add Monster weapon switchcase
+ *  To DO
  *  Add StoryLine
  *      Add Monster dialogue
  *  Add Action window
@@ -34,31 +34,135 @@ namespace HeroVsMonster
         public static int Level;
         public static int Xp;
         public static int Health;
-        public static double Wallet;
+        public static int Wallet;
 
         public static List<string> PreferedWeapon = new List<string>();
         public static List<string> Defence = new List<string>();
         public static List<string> Inventory = new List<string>();
+
+        public static void PlayerCreation() // Player creation, name + class = Starting specs
+        {
+            Random _random = new Random();
+
+            // Starting Level
+            Player.Level = 1;
+            Player.Xp = 0;
+            Player.Wallet = 50;
+            Player.Health = 100;
+
+            // Selecting Weapon
+            int _PlayerWeapon = _random.Next(0, Enum.GetValues(typeof(PlayerWeapons)).GetUpperBound(0));
+            Player.Weapon = ((PlayerWeapons)_PlayerWeapon).ToString();
+
+            Utility.Heading(Utility.Center("\nStarting a New game"));
+            // Name Creation
+            Console.Write("\n\tEnter your Name Hero: ");
+            Player.Name = Console.ReadLine();
+            Utility.Write($"\nWelcome {Player.Name}! We have been awaiting your arrival for some time now..");
+            Console.ReadKey();
+
+            // Class selection
+            bool x = false;
+            int z = 0;
+            int enumMax = Enum.GetValues(typeof(PlayerClass)).GetUpperBound(0); // Gets the max enum value
+
+            // Itterates throug PlayerClass Enum
+            while (!x)
+            {
+                var Current = (PlayerClass)z;
+                Utility.Write($"\n{Player.Name} are you a.. " + Current);
+                string input = Utility.Input("Select Yes or No (Y/N)");
+                Console.Clear();
+
+                if ((input != "y") && (z < enumMax)) { z++; }
+                else if ((input != "y") && (z == enumMax)) { z = 0; }
+                else
+                {
+                    Player.Class = Current.ToString();
+                    switch (Player.Class)
+                    {
+                        case "Warrior":
+                            Utility.Write($".. *Sigh*, thank the heavens that you a {Player.Class}! Came to our resque. This will give the " +
+                                $"Towns people som safety");
+                            x = true;
+                            break;
+                        case "Archer":
+                            Utility.Write($"Great we really need an {Player.Class} to take down those pesky flying things! Just don't die " +
+                                $"on us too fast, these monsters are Nasty");
+                            x = true;
+                            break;
+                        case "Mage":
+                            Utility.Write($"Wow! A {Player.Class}! I don't know if i should worry or be thankfull! The last {Player.Class} " +
+                                $"almost wiped out our city when he sneezed... ");
+                            x = true;
+                            break;
+                        case "Munk":
+                            Utility.Write($"A {Player.Class}! Are you shure you'r up for this?? Didn't think \"Holy People\" did much figthing.. ");
+                            x = true;
+                            break;
+                        default:
+                            Utility.Write($"*Yikes!!* A {Player.Class}!! What is the king thinking sending YOU of all people, times must " +
+                                $"really be dire...");
+                            x = true;
+                            break;
+                    }
+                }
+            }
+
+            //Adding Player base stats
+            switch (Player.Class)
+            {
+                case "Warrior":
+                    Player.Defence.Add("Steel");
+                    Player.PreferedWeapon.Add("GreatSword");
+                    Player.PreferedWeapon.Add("Sword");
+                    Player.PreferedWeapon.Add("Mace");
+                    break;
+
+                case "Mage":
+                    Player.Defence.Add("Archane");
+                    Player.PreferedWeapon.Add("Wand");
+                    Player.PreferedWeapon.Add("Staff");
+                    break;
+
+                case "Archer":
+                    Player.Defence.Add("Leather");
+                    Player.PreferedWeapon.Add("Bow");
+                    Player.PreferedWeapon.Add("CrossBow");
+                    break;
+
+                case "Munk":
+                    Player.Defence.Add("Faith");
+                    Player.PreferedWeapon.Add("Staff");
+                    Player.PreferedWeapon.Add("Umbrella");
+                    Player.PreferedWeapon.Add("Fists");
+                    break;
+
+                default:    //Farmer
+                    Player.Defence.Add(((DefenceType)_random.Next(0, Enum.GetValues(typeof(DefenceType))
+                        .GetUpperBound(0))).ToString());
+                    Player.Health += 100;
+                    Player.PreferedWeapon.Add("Pitchfork");
+                    Player.PreferedWeapon.Add("Shovel");
+                    Player.PreferedWeapon.Add("Fists");
+                    break;
+            }
+
+            Game.SaveGame();
+            GamePlay.Loop();
+        }
     }
 
     public static class Game
     {
-        public static List<string> PreferedWeapon = new List<string>();
-        public static List<string> Defence = new List<string>();
-        public static List<string> Inventory = new List<string>();
-
+        static int Choice;
+        static string Input;
+        static bool Run;
 
         public static void StartGame() // Logic to itterate trough the game sequence
         {
             SplashScreen();
-
-            Utility.Write("Let's Begin!");
-            Utility.Pause();
-
-            PlayerCreation();
-            Utility.Pause();
-
-            GamePlay.Loop();
+            ConsoleStartMenu();
         }
 
         static void SplashScreen() // Splash screen to display Game Title and first impression
@@ -91,95 +195,180 @@ namespace HeroVsMonster
             Utility.Pause();
         }
 
-        static void PlayerCreation() // Player creation, name + class = Starting specs
+        static void LoadGame(string _save) 
         {
-            Random _random = new Random();
+            string _path = @"C:\Users\Andreas\source\repos\HeroVsMonster\saves\";
+            StreamReader sr = new StreamReader(_save);
 
-            // Starting Level
-            Player.Level = 1;
-            Player.Xp = 0;
-            Player.Wallet = 50.00;
-
-            // Name Creation
-            Player.Name = Utility.Input("Enter your Name Hero");
-            Utility.Write($"Welcome {Player.Name}! \n We have been awaiting your arrival for some time now..", "red");
-            Utility.Pause();
-
-            // Class selection
-            bool x = false;
-            int z = 0;
-            int enumMax = Enum.GetValues(typeof(PlayerClass)).GetUpperBound(0); // Gets the max enum value
-
-            // Itterates throug PlayerClass Enum
-            while (!x)
+            Player.Name = sr.ReadLine();
+            Player.Health = Convert.ToInt16(sr.ReadLine());
+            Player.Class = sr.ReadLine();
+            Player.Level = Convert.ToInt16(sr.ReadLine());
+            Player.Xp = Convert.ToInt16(sr.ReadLine());
+            Player.Weapon = sr.ReadLine();
+            Player.Wallet = Convert.ToInt16(sr.ReadLine());
+            
+            string line = sr.ReadLine();
+            while (line != null)
             {
-                var Current = (PlayerClass)z;
-                Utility.Write($"\n{Player.Name} are you a.. " + Current, "red");
-                string input = Utility.Input("Select Yes or No (Y/N)");
-                Console.Clear();
+                Player.Inventory.Add(line);
+            }
+            sr.Close();
 
-                if ((input != "y") && (z < enumMax)) { z++; }
-                else if ((input != "y") && (z == enumMax)) { z = 0; }
+            Utility.Write(Utility.Center("Game Loaded!"), "red");
+            Utility.Pause();
+            GamePlay.Loop();
+        }
+
+        public static void SaveGame() 
+        {
+            try
+            {
+            // C: \Users\Andreas\source\repos\HeroVsMonster\saves\
+
+                string _path = @"C:\Users\Andreas\source\repos\HeroVsMonster\saves\";
+                StreamWriter sw = new StreamWriter(_path + $"{Player.Name}.txt", false);
+                sw.WriteLine(Player.Name);
+                sw.WriteLine(Player.Health);
+                sw.WriteLine(Player.Class);
+                sw.WriteLine(Player.Level);
+                sw.WriteLine(Player.Xp);
+                sw.WriteLine(Player.Weapon);
+                sw.WriteLine(Player.Wallet);
+                foreach (string inv in Player.Inventory) { sw.WriteLine(inv); }
+                sw.Close();
+            }
+            catch(Exception e) { Utility.Write("Exception: " + e.Message); }
+
+            Utility.Write(Utility.Center("Game Saved!"), "cyan");
+            Utility.Pause();
+        }
+
+        static void ExitGame() { Environment.Exit(1); }
+
+        static void Menu()
+        {
+            Console.Clear();
+            Console.WriteLine("Menu options");
+
+            Input = Console.ReadLine();
+            if (int.TryParse(Input, out Choice))
+            {
+                if (Choice >= 5) { Run = false; }
                 else
                 {
-                    Player.Class = Current.ToString();
-                    Utility.Write($"Great we really needed a {Player.Class} at this moment!", "red");
-                    x = true;
+                    switch (Choice)
+                    {
+                        case 1:
+
+                            break;
+
+                        default:
+                            //if a number other than 1-5 is entered, request
+                            //player enter a number in that range
+                            //wait for them to press enter, then call
+                            //the menu again
+                            Console.WriteLine("Please enter a number 1-5.");
+                            Console.WriteLine("Press enter to continue...");
+                            Console.ReadLine();
+                            Menu();
+                            break;
+                    }
                 }
             }
-
-            //Adding Player base stats
-            switch (Player.Class)
+            else
             {
-                case "Warrior":
-                    Defence.Add("Steel");
-                    Player.Health = 120;
-                    PreferedWeapon.Add("GreatSword"); PreferedWeapon.Add("Sword"); PreferedWeapon.Add("Mace");
-                    
-                    // Selecting Weapon
-                    int _PlayerWeapon = _random.Next(0, Enum.GetValues(typeof(PlayerWeapons)).GetUpperBound(0));
-                    Player.Weapon = ((PlayerWeapons)_PlayerWeapon).ToString();
-                    break;
+                Console.WriteLine("Please enter a valid choice");
+                Console.WriteLine("\nPress enter to continue..");
+                Console.ReadLine();
+                Menu();
+            }
+        }
 
-                case "Mage":
-                    Player.Health = 75;
-                    PreferedWeapon.Add("Wand"); PreferedWeapon.Add("Staff");
-                    Defence.Add("Magic");
+        static void ConsoleStartMenu()
+        {
+            string[] _menuList = {"New Game", "Load Game", "Exit to Desktop."};
+            Console.Clear();
+            Utility.Title("Hero Vs Monster" , "Survival of the luckiest...");
 
-                    // Selecting Weapon
-                    _PlayerWeapon = _random.Next(0, Enum.GetValues(typeof(PlayerWeapons)).GetUpperBound(0));
-                    Player.Weapon = ((PlayerWeapons)_PlayerWeapon).ToString();
-                    break;
+            Utility.Write(Utility.Center("\nMain Menue"));
+            int _int = 1; // Menue Choice
+            foreach (string M in _menuList) 
+            { 
+                Utility.Write(Utility.Center($"\n{M} < {_int} >")); 
+                _int++; 
+            }
 
-                case "Archer":
-                    Player.Health = 80;
-                    PreferedWeapon.Add("Bow"); PreferedWeapon.Add("CrossBow");
-                    Defence.Add("Leather");
+            Input = Console.ReadLine();
+            if (int.TryParse(Input, out Choice))
+            {
+                if (Choice >= _menuList.Length) 
+                { 
+                    Run = false;
+                    ExitGame();
+                }
+                else
+                {
+                    switch (Choice)
+                    {
+                        case 1:
+                            Console.Clear();
+                            Player.PlayerCreation();
+                            break;
 
-                    // Selecting Weapon
-                    _PlayerWeapon = _random.Next(0, Enum.GetValues(typeof(PlayerWeapons)).GetUpperBound(0));
-                    Player.Weapon = ((PlayerWeapons)_PlayerWeapon).ToString();
-                    break;
+                        case 2:
+                            Console.Clear();
+                            Utility.Title("Hero Vs Monster", "Survival of the luckiest...");
+                            Console.Write("\nLoad Game");
+                            try
+                            {
+                                string[] _saves = Directory.GetFiles(@"C:\Users\Andreas\source\repos\HeroVsMonster\saves\", "*.txt");
 
-                case "Munk":
-                    Player.Health = 80;
-                    PreferedWeapon.Add("Staff"); PreferedWeapon.Add("Umbrella");
-                    Defence.Add("Faith");
+                                int _intSaves = 1; // Menue Choice
+                                foreach (string S in _saves) { Utility.Write(Utility.Center($"\n{S} < {_intSaves} >")); _intSaves++; }
 
-                    // Selecting Weapon
-                    _PlayerWeapon = _random.Next(0, Enum.GetValues(typeof(PlayerWeapons)).GetUpperBound(0));
-                    Player.Weapon = ((PlayerWeapons)_PlayerWeapon).ToString();
-                    break;
+                                string _inputSave = Console.ReadLine();
+                                if (int.TryParse(_inputSave, out Choice))
+                                {
+                                    if (Choice > _menuList.Length)
+                                    {
+                                        Utility.Write($"Please enter a number 1-{_menuList.Length}.");
+                                        break;
+                                    }
+                                    else
+                                    {
+                                        int _saveGame = Choice - 1; 
+                                        LoadGame(_saves[_saveGame]);
+                                    }
+                                }
+                            }
+                            catch 
+                            {
+                                Utility.Write("You have no prior Savegames..");
+                                Console.ReadKey();
+                                ConsoleStartMenu();
+                            }
+                            break;
 
-                default:    //Farmer
-                    Player.Health = 150;
-                    PreferedWeapon.Add("Pitchfork"); PreferedWeapon.Add("Shovel");
-                    Defence.Add("None");
-
-                    // Selecting Weapon
-                    _PlayerWeapon = _random.Next(0, Enum.GetValues(typeof(PlayerWeapons)).GetUpperBound(0));
-                    Player.Weapon = ((PlayerWeapons)_PlayerWeapon).ToString();
-                    break;
+                         default:
+                            //if a number other than 1-5 is entered, request
+                            //player enter a number in that range
+                            //wait for them to press enter, then call
+                            //the menu again
+                            Console.WriteLine($"Please enter a number 1-{_menuList.Length}.");
+                            Console.WriteLine("\nPress enter to continue...");
+                            Console.ReadKey();
+                            Menu();
+                            break;
+                    }
+                }
+            }
+            else
+            {
+                Console.WriteLine("Please enter a valid choice");
+                Console.WriteLine("\nPress enter to continue..");
+                Console.ReadLine();
+                Menu();
             }
         }
     }
@@ -231,7 +420,7 @@ namespace HeroVsMonster
                 _attackType = Monsters.Class;
                 _level = Monsters.Level;
                 _weapon = Monsters.Weapon;
-                foreach (string x in Game.Defence) { _defenceType.Add(x); }
+                foreach (string x in Player.Defence) { _defenceType.Add(x); }
                 foreach (string pw in Monsters.PreferedWeapon) { _preferdWeapon.Add(pw); }
             }
             // The hero attacks
@@ -241,7 +430,7 @@ namespace HeroVsMonster
                 _level = Player.Level;
                 _weapon = Player.Weapon;
                 foreach (string x in Monsters.Defence) { _defenceType.Add(x); }
-                foreach (string pw in Game.PreferedWeapon) { _preferdWeapon.Add(pw); }
+                foreach (string pw in Player.PreferedWeapon) { _preferdWeapon.Add(pw); }
             }
 
             string[] bluntWeapons = { "Mace", "Staff", "Fists", "Umbrella", "WoodenClub", "TreeTrunk", "Pebbles", "Staff", "Fists" };
@@ -480,6 +669,7 @@ namespace HeroVsMonster
                 MonstersBeaten++;
                 Utility.Write($"You dealt {damageGiven} damage to the {Monsters.Class} with your {Player.Weapon}.");
                 LevelUp();
+                Game.SaveGame();
             }
             //Game Over
             else
