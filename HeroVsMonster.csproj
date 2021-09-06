@@ -6,7 +6,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="graphic\" />
     <Folder Include="console\" />
     <Folder Include="saves\" />
     <Folder Include="sound\" />

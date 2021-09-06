@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
-using System.Text;
 
 /*
  *  To DO
@@ -10,7 +9,6 @@ using System.Text;
  *      Add Monster dialogue
  *  Add Action window
  *  Add Navigation
- *  Add save/load function
  *  
  */
 
@@ -20,185 +18,28 @@ namespace HeroVsMonster
     {
         static void Main(string[] args)
         {
-            Game.StartGame();
+            ActionWindow.SplashScreen();
+            ActionWindow.WindowAdjust();
+            ActionWindow.MainWindow();
             Console.ReadKey();
-        }
-    }
-
-    public static class Player
-    {
-        public static string Name;
-        public static string Class;
-        public static string Weapon;
-
-        public static int Level;
-        public static int Xp;
-        public static int Health;
-        public static int Wallet;
-
-        public static List<string> PreferedWeapon = new List<string>();
-        public static List<string> Defence = new List<string>();
-        public static List<string> Inventory = new List<string>();
-
-        public static void PlayerCreation() // Player creation, name + class = Starting specs
-        {
-            Random _random = new Random();
-
-            // Starting Level
-            Player.Level = 1;
-            Player.Xp = 0;
-            Player.Wallet = 50;
-            Player.Health = 100;
-
-            // Selecting Weapon
-            int _PlayerWeapon = _random.Next(0, Enum.GetValues(typeof(PlayerWeapons)).GetUpperBound(0));
-            Player.Weapon = ((PlayerWeapons)_PlayerWeapon).ToString();
-
-            Utility.Heading(Utility.Center("\nStarting a New game"));
-            // Name Creation
-            Console.Write("\n\tEnter your Name Hero: ");
-            Player.Name = Console.ReadLine();
-            Utility.Write($"\nWelcome {Player.Name}! We have been awaiting your arrival for some time now..");
-            Console.ReadKey();
-
-            // Class selection
-            bool x = false;
-            int z = 0;
-            int enumMax = Enum.GetValues(typeof(PlayerClass)).GetUpperBound(0); // Gets the max enum value
-
-            // Itterates throug PlayerClass Enum
-            while (!x)
-            {
-                var Current = (PlayerClass)z;
-                Utility.Write($"\n{Player.Name} are you a.. " + Current);
-                string input = Utility.Input("Select Yes or No (Y/N)");
-                Console.Clear();
-
-                if ((input != "y") && (z < enumMax)) { z++; }
-                else if ((input != "y") && (z == enumMax)) { z = 0; }
-                else
-                {
-                    Player.Class = Current.ToString();
-                    switch (Player.Class)
-                    {
-                        case "Warrior":
-                            Utility.Write($".. *Sigh*, thank the heavens that you a {Player.Class}! Came to our resque. This will give the " +
-                                $"Towns people som safety");
-                            x = true;
-                            break;
-                        case "Archer":
-                            Utility.Write($"Great we really need an {Player.Class} to take down those pesky flying things! Just don't die " +
-                                $"on us too fast, these monsters are Nasty");
-                            x = true;
-                            break;
-                        case "Mage":
-                            Utility.Write($"Wow! A {Player.Class}! I don't know if i should worry or be thankfull! The last {Player.Class} " +
-                                $"almost wiped out our city when he sneezed... ");
-                            x = true;
-                            break;
-                        case "Munk":
-                            Utility.Write($"A {Player.Class}! Are you shure you'r up for this?? Didn't think \"Holy People\" did much figthing.. ");
-                            x = true;
-                            break;
-                        default:
-                            Utility.Write($"*Yikes!!* A {Player.Class}!! What is the king thinking sending YOU of all people, times must " +
-                                $"really be dire...");
-                            x = true;
-                            break;
-                    }
-                }
-            }
-
-            //Adding Player base stats
-            switch (Player.Class)
-            {
-                case "Warrior":
-                    Player.Defence.Add("Steel");
-                    Player.PreferedWeapon.Add("GreatSword");
-                    Player.PreferedWeapon.Add("Sword");
-                    Player.PreferedWeapon.Add("Mace");
-                    break;
-
-                case "Mage":
-                    Player.Defence.Add("Archane");
-                    Player.PreferedWeapon.Add("Wand");
-                    Player.PreferedWeapon.Add("Staff");
-                    break;
-
-                case "Archer":
-                    Player.Defence.Add("Leather");
-                    Player.PreferedWeapon.Add("Bow");
-                    Player.PreferedWeapon.Add("CrossBow");
-                    break;
-
-                case "Munk":
-                    Player.Defence.Add("Faith");
-                    Player.PreferedWeapon.Add("Staff");
-                    Player.PreferedWeapon.Add("Umbrella");
-                    Player.PreferedWeapon.Add("Fists");
-                    break;
-
-                default:    //Farmer
-                    Player.Defence.Add(((DefenceType)_random.Next(0, Enum.GetValues(typeof(DefenceType))
-                        .GetUpperBound(0))).ToString());
-                    Player.Health += 100;
-                    Player.PreferedWeapon.Add("Pitchfork");
-                    Player.PreferedWeapon.Add("Shovel");
-                    Player.PreferedWeapon.Add("Fists");
-                    break;
-            }
-
-            Game.SaveGame();
-            GamePlay.Loop();
         }
     }
 
     public static class Game
     {
-        static int Choice;
-        static string Input;
-        static bool Run;
+        public static int Choice;
+        public static string Input;
+        public static bool Run;
 
         public static void StartGame() // Logic to itterate trough the game sequence
         {
-            SplashScreen();
             ConsoleStartMenu();
         }
 
-        static void SplashScreen() // Splash screen to display Game Title and first impression
+        public static void LoadGame(string _save) 
         {
-            string Title = @"
-
-         ██░ ██ ▓█████  ██▀███   ▒█████    ██████     ██▒   █▓  ██████            
-        ▓██░ ██▒▓█   ▀ ▓██ ▒ ██▒▒██▒  ██▒▒██    ▒    ▓██░   █▒▒██    ▒            
-        ▒██▀▀██░▒███   ▓██ ░▄█ ▒▒██░  ██▒░ ▓██▄       ▓██  █▒░░ ▓██▄              
-        ░▓█ ░██ ▒▓█  ▄ ▒██▀▀█▄  ▒██   ██░  ▒   ██▒     ▒██ █░░  ▒   ██▒           
-        ░▓█▒░██▓░▒████▒░██▓ ▒██▒░ ████▓▒░▒██████▒▒      ▒▀█░  ▒██████▒▒           
-         ▒ ░░▒░▒░░ ▒░ ░░ ▒▓ ░▒▓░░ ▒░▒░▒░ ▒ ▒▓▒ ▒ ░      ░ ▐░  ▒ ▒▓▒ ▒ ░           
-         ▒ ░▒░ ░ ░ ░  ░  ░▒ ░ ▒░  ░ ▒ ▒░ ░ ░▒  ░ ░      ░ ░░  ░ ░▒  ░ ░           
-         ░  ░░ ░   ░     ░░   ░ ░ ░ ░ ▒  ░  ░  ░          ░░  ░  ░  ░             
-         ░  ░  ░   ░  ░   ░         ░ ░        ░           ░        ░             
-                                                          ░                       
-         ███▄ ▄███▓ ▒█████   ███▄    █   ██████ ▄▄▄█████▓▓█████  ██▀███    ██████ 
-        ▓██▒▀█▀ ██▒▒██▒  ██▒ ██ ▀█   █ ▒██    ▒ ▓  ██▒ ▓▒▓█   ▀ ▓██ ▒ ██▒▒██    ▒ 
-        ▓██    ▓██░▒██░  ██▒▓██  ▀█ ██▒░ ▓██▄   ▒ ▓██░ ▒░▒███   ▓██ ░▄█ ▒░ ▓██▄   
-        ▒██    ▒██ ▒██   ██░▓██▒  ▐▌██▒  ▒   ██▒░ ▓██▓ ░ ▒▓█  ▄ ▒██▀▀█▄    ▒   ██▒
-        ▒██▒   ░██▒░ ████▓▒░▒██░   ▓██░▒██████▒▒  ▒██▒ ░ ░▒████▒░██▓ ▒██▒▒██████▒▒
-        ░ ▒░   ░  ░░ ▒░▒░▒░ ░ ▒░   ▒ ▒ ▒ ▒▓▒ ▒ ░  ▒ ░░   ░░ ▒░ ░░ ▒▓ ░▒▓░▒ ▒▓▒ ▒ ░
-        ░  ░      ░  ░ ▒ ▒░ ░ ░░   ░ ▒░░ ░▒  ░ ░    ░     ░ ░  ░  ░▒ ░ ▒░░ ░▒  ░ ░
-        ░      ░   ░ ░ ░ ▒     ░   ░ ░ ░  ░  ░    ░         ░     ░░   ░ ░  ░  ░  
-               ░       ░ ░           ░       ░              ░  ░   ░           ░  
-                                                                                                                                    
-          ";
-            Console.WriteLine(Title);
-            Utility.Title("Hero Vs Monsters");
-            Utility.Pause();
-        }
-
-        static void LoadGame(string _save) 
-        {
-            string _path = @"C:\Users\Andreas\source\repos\HeroVsMonster\saves\";
-            StreamReader sr = new StreamReader(_save);
+            string path = @"C:\Users\Andreas\source\repos\HeroVsMonster\saves\";
+            StreamReader sr = new StreamReader(_save + ".txt");
 
             Player.Name = sr.ReadLine();
             Player.Health = Convert.ToInt16(sr.ReadLine());
@@ -215,7 +56,7 @@ namespace HeroVsMonster
             }
             sr.Close();
 
-            Utility.Write(Utility.Center("Game Loaded!"), "red");
+            Utility.WriteLine(Utility.Center("Game Loaded!"), "red");
             Utility.Pause();
             GamePlay.Loop();
         }
@@ -238,23 +79,61 @@ namespace HeroVsMonster
                 foreach (string inv in Player.Inventory) { sw.WriteLine(inv); }
                 sw.Close();
             }
-            catch(Exception e) { Utility.Write("Exception: " + e.Message); }
+            catch(Exception e) { Utility.WriteLine("Exception: " + e.Message); }
 
-            Utility.Write(Utility.Center("Game Saved!"), "cyan");
+            Utility.WriteLine(Utility.Center("Game Saved!"), "cyan");
             Utility.Pause();
         }
 
-        static void ExitGame() { Environment.Exit(1); }
-
-        static void Menu()
+        public static void ExitGame() 
         {
+            string credits =
+                @"
+
+
+               Thank you for playing HeroVsMonster.
+
+                    This game vas developed 
+                               by 
+                        Andreas Nesheim.
+
+                              2021
+
+
+                Art work gathered frow the web:
+                   https://www.asciiart.eu/
+
+
+                Part of the game was inspiered by 
+                    various online tutorials:
+    http://programmingisfun.com/learn/c-sharp-adventure-game/
+
+";
+            Utility.WriteLine(credits, "yellow");
+            Utility.Pause();
+            Environment.Exit(1); 
+        }
+
+        public static void Menu(string _MenuSwitch)
+        {
+            var _menuList = MenueOptions._menueList(_MenuSwitch);
             Console.Clear();
-            Console.WriteLine("Menu options");
+
+            int _int = 1; // Menue Choice
+            foreach (string M in _menuList)
+            {
+                Utility.WriteLine(Utility.Center($"\n{M} < {_int} >"));
+                _int++;
+            }
 
             Input = Console.ReadLine();
             if (int.TryParse(Input, out Choice))
             {
-                if (Choice >= 5) { Run = false; }
+                if (Choice >= _menuList.Length) 
+                { 
+                    Run = false;
+                    ExitGame();
+                }
                 else
                 {
                     switch (Choice)
@@ -271,7 +150,7 @@ namespace HeroVsMonster
                             Console.WriteLine("Please enter a number 1-5.");
                             Console.WriteLine("Press enter to continue...");
                             Console.ReadLine();
-                            Menu();
+                            Menu(_MenuSwitch);
                             break;
                     }
                 }
@@ -281,21 +160,21 @@ namespace HeroVsMonster
                 Console.WriteLine("Please enter a valid choice");
                 Console.WriteLine("\nPress enter to continue..");
                 Console.ReadLine();
-                Menu();
+                Menu(_MenuSwitch);
             }
         }
 
-        static void ConsoleStartMenu()
+        public static void ConsoleStartMenu()
         {
             string[] _menuList = {"New Game", "Load Game", "Exit to Desktop."};
             Console.Clear();
             Utility.Title("Hero Vs Monster" , "Survival of the luckiest...");
 
-            Utility.Write(Utility.Center("\nMain Menue"));
+            Utility.WriteLine(Utility.Center("\nMain Menue"));
             int _int = 1; // Menue Choice
             foreach (string M in _menuList) 
             { 
-                Utility.Write(Utility.Center($"\n{M} < {_int} >")); 
+                Utility.WriteLine(Utility.Center($"\n{M} < {_int} >")); 
                 _int++; 
             }
 
@@ -311,40 +190,62 @@ namespace HeroVsMonster
                 {
                     switch (Choice)
                     {
-                        case 1:
+                        case 1: // New Game
                             Console.Clear();
                             Player.PlayerCreation();
                             break;
 
-                        case 2:
+                        case 2: // Load Game
                             Console.Clear();
                             Utility.Title("Hero Vs Monster", "Survival of the luckiest...");
                             Console.Write("\nLoad Game");
                             try
                             {
                                 string[] _saves = Directory.GetFiles(@"C:\Users\Andreas\source\repos\HeroVsMonster\saves\", "*.txt");
-
+                                List<int> _skipDeadpeople = new List<int> { };
                                 int _intSaves = 1; // Menue Choice
-                                foreach (string S in _saves) { Utility.Write(Utility.Center($"\n{S} < {_intSaves} >")); _intSaves++; }
+
+                                foreach (string S in _saves) 
+                                {
+                                    StreamReader sr = new StreamReader(S);
+
+                                    string _temporaryName = sr.ReadLine();
+                                    int _temporaryHealth = Convert.ToInt16(sr.ReadLine());
+
+                                    if (_temporaryHealth > 0)
+                                    {
+                                        Utility.WriteLine(Utility.Center($"\n{S} < *Dead* >"));
+                                        _skipDeadpeople.Add(_intSaves);
+                                        _intSaves++;
+                                    }
+                                    else
+                                    {
+                                        Utility.WriteLine(Utility.Center($"\n{S} < {_intSaves} >"));
+                                        _intSaves++;
+                                    }
+                                }
 
                                 string _inputSave = Console.ReadLine();
                                 if (int.TryParse(_inputSave, out Choice))
                                 {
-                                    if (Choice > _menuList.Length)
+                                    if ((Choice > _menuList.Length) || _skipDeadpeople.Contains(Choice))
                                     {
-                                        Utility.Write($"Please enter a number 1-{_menuList.Length}.");
+                                        Utility.WriteLine($"Please enter a number between 1-{_menuList.Length}. That arent Dead People!");
                                         break;
                                     }
                                     else
                                     {
-                                        int _saveGame = Choice - 1; 
-                                        LoadGame(_saves[_saveGame]);
+                                        string S = _saves[_intSaves - 1];
+                                        StreamReader sr = new StreamReader(S);
+                                        string _temporaryName = sr.ReadLine();
+
+                                        LoadGame(_temporaryName);
                                     }
                                 }
                             }
                             catch 
                             {
-                                Utility.Write("You have no prior Savegames..");
+                                Utility.WriteLine("You have no prior Savegames..");
                                 Console.ReadKey();
                                 ConsoleStartMenu();
                             }
@@ -358,7 +259,7 @@ namespace HeroVsMonster
                             Console.WriteLine($"Please enter a number 1-{_menuList.Length}.");
                             Console.WriteLine("\nPress enter to continue...");
                             Console.ReadKey();
-                            Menu();
+                            ConsoleStartMenu();
                             break;
                     }
                 }
@@ -368,14 +269,15 @@ namespace HeroVsMonster
                 Console.WriteLine("Please enter a valid choice");
                 Console.WriteLine("\nPress enter to continue..");
                 Console.ReadLine();
-                Menu();
+                ConsoleStartMenu();
             }
         }
     }
 
     public static class GamePlay
     {
-        public static int MonstersBeaten;
+        public static int MonstersBeaten = 0;
+        public static int _nextLevel = 100;
 
         public static void Loop()
         {
@@ -385,18 +287,16 @@ namespace HeroVsMonster
         public static void LevelUp()
         {
             int _xp = Player.Xp;
-            int _level = Player.Level;
-
-            int _nextLevel = 100;
+            _nextLevel = 100;
 
             if (_xp >= _nextLevel)
             {
                 Player.Level++;
                 _nextLevel += (_nextLevel / 3);
 
-                Utility.Write($"Congratulations, you have leveled up!! {Player.Level}");
+                Utility.WriteLine($"Congratulations, you have leveled up!! {Player.Level}");
             }
-            else { Utility.Write($"Next Level in {_nextLevel - _xp}!", "cyan"); }
+            else { Utility.WriteLine($"Next Level in {_nextLevel - _xp}!", "cyan"); }
         }
 
 
@@ -626,7 +526,7 @@ namespace HeroVsMonster
             int damageTaken = 0;
             int damageGiven = 0;
 
-            Utility.Write($"A {Monsters.Class} appeard at the edge of town..");
+            Utility.WriteLine($"A {Monsters.Class} appeard at the edge of town..");
             
 
             // Fight sceen, performes dice roll, delivers damage, recives damage (loop until one survivor)
@@ -637,8 +537,8 @@ namespace HeroVsMonster
                 playerAttack = Utility.DiceRoll() * AttackMultiplier(Player.Name);
                 damageGiven += playerAttack;
 
-                Utility.Write($"You attack the {Monsters.Class} with your {Player.Weapon}...", "cyan");
-                Utility.Write($"The  {Monsters.Class} took {playerAttack} damage!", "red");
+                Utility.WriteLine($"You attack the {Monsters.Class} with your {Player.Weapon}...", "cyan");
+                Utility.WriteLine($"The  {Monsters.Class} took {playerAttack} damage!", "red");
 
                 //Update the monster HP
                 Monsters.Health -= playerAttack;
@@ -649,8 +549,8 @@ namespace HeroVsMonster
                 monsterAttack = Utility.DiceRoll() * AttackMultiplier(Monsters.Class);
                 damageTaken += monsterAttack;
 
-                Utility.Write($"The {Monsters.Class} attacks you with {Monsters.Weapon}...", "cyan");
-                Utility.Write($"The  you reccived {monsterAttack} damage!", "red");
+                Utility.WriteLine($"The {Monsters.Class} attacks you with {Monsters.Weapon}...", "cyan");
+                Utility.WriteLine($"The  you reccived {monsterAttack} damage!", "red");
 
                 // Update the HeroHP
                 Player.Health -= monsterAttack;
@@ -662,12 +562,12 @@ namespace HeroVsMonster
             // Wictory loop
             if (Player.Health > Monsters.Health)
             {
-                Utility.Write($".. The {Monsters.Class} crumbles to the ground reciving it's final blow from your" +
+                Utility.WriteLine($".. The {Monsters.Class} crumbles to the ground reciving it's final blow from your" +
                     $" {Player.Weapon} taking {playerAttack} damage!");
                 //Give Hero the xp and stats.
-                Player.Xp += (Monsters.Level % 3);
+                Player.Xp += (Monsters.Level < 10) ? (Monsters.Level * 3) : (damageGiven / Monsters.Level);
                 MonstersBeaten++;
-                Utility.Write($"You dealt {damageGiven} damage to the {Monsters.Class} with your {Player.Weapon}.");
+                Utility.WriteLine($"You dealt {damageGiven} damage to the {Monsters.Class} with your {Player.Weapon}.");
                 LevelUp();
                 Game.SaveGame();
             }
@@ -675,8 +575,8 @@ namespace HeroVsMonster
             else
             {
                 Utility.Heading("Game Over!");
-                Utility.Write($"You where beaten by a {Monsters.Class}, it has {Monsters.Health} Hp left...");
-                Utility.Write($"\nYou reached Level: {Player.Level} \nYou hav beaten: {MonstersBeaten} Monsters! \nIn the end you delt  " +
+                Utility.WriteLine($"You where beaten by a {Monsters.Class}, it has {Monsters.Health} Hp left...");
+                Utility.WriteLine($"\nYou reached Level: {Player.Level} \nYou hav beaten: {MonstersBeaten} Monsters! \nIn the end you delt  " +
                     $"{damageGiven} damage to {Monsters.Class}, and took {damageTaken} damage from the monster");
             }
 
@@ -761,11 +661,10 @@ namespace HeroVsMonster
         {
             string input = Utility.Input($"{Player.Name}, Which path will you Choose? {A} or {B}");
 
-            if (input == "a") { Utility.Write($"Mighty {Player.Class} You have chosen path {A}!"); }
-            else { Utility.Write($"Mighty {Player.Class} You have chosen path {B}!"); }
+            if (input == "a") { Utility.WriteLine($"Mighty {Player.Class} You have chosen path {A}!"); }
+            else { Utility.WriteLine($"Mighty {Player.Class} You have chosen path {B}!"); }
         }
     }
-
 
     public class Item
     {
@@ -791,27 +690,187 @@ namespace HeroVsMonster
         static string margin = "\t";
         static string indent = "\t\t";
 
-        public static string Input() // Recives the user input
+        public static string Input(bool ToUpper = false) // Recives the user input, if true "input as is"
         {
             Console.Write($"{margin}: ");
             string input = Console.ReadLine();
             Console.ResetColor();
-            return input.ToLower();
+            return (!ToUpper) ? input.ToLower() : input;
         }
 
-        public static string Input(string _string)
+        public static string Input(string _string, bool ToUpper = false)
         {
             Console.ForegroundColor = ConsoleColor.Green;
             Console.Write($"{margin}{_string}: ");
             string input = Console.ReadLine();
             Console.ResetColor();
-            return input.ToLower();
+            return (!ToUpper) ? input.ToLower() : input;
+        }
+
+        public static void WriteLine(string _string)
+        {
+            _string = _string.Replace("\n", $"\n {margin}");
+            Console.WriteLine(margin + _string);
+        }
+
+        public static void WriteLine(string _string, string _color)
+        {
+            _string = _string.Replace("\n", $"\n {margin}");
+
+            switch (_color)
+            {
+                case "blue":
+                    Console.ForegroundColor = ConsoleColor.Blue;
+                    break;
+                case "yellow":
+                    Console.ForegroundColor = ConsoleColor.Yellow;
+                    break;
+                case "red":
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    break;
+                case "magenta":
+                    Console.ForegroundColor = ConsoleColor.Magenta;
+                    break;
+                case "green":
+                    Console.ForegroundColor = ConsoleColor.Green;
+                    break;
+                case "gray":
+                    Console.ForegroundColor = ConsoleColor.Gray;
+                    break;
+                case "darkyellow":
+                    Console.ForegroundColor = ConsoleColor.DarkYellow;
+                    break;
+                case "darkred":
+                    Console.ForegroundColor = ConsoleColor.DarkRed;
+                    break;
+                case "darkgreen":
+                    Console.ForegroundColor = ConsoleColor.DarkGreen;
+                    break;
+                case "darkgray":
+                    Console.ForegroundColor = ConsoleColor.DarkGray;
+                    break;
+                case "darkcyan":
+                    Console.ForegroundColor = ConsoleColor.DarkCyan;
+                    break;
+                case "darkblue":
+                    Console.ForegroundColor = ConsoleColor.DarkBlue;
+                    break;
+                case "cyan":
+                    Console.ForegroundColor = ConsoleColor.Cyan;
+                    break;
+                default:
+                    Console.ForegroundColor = ConsoleColor.White;
+                    break;
+            }
+
+            WriteLine(_string);
+            Console.ResetColor();
+        }
+
+        public static void WriteLine(string _string, string _color, string _background)
+        {
+            _string = _string.Replace("\n", $"\n {margin}");
+
+            switch (_color)
+            {
+                case "blue":
+                    Console.ForegroundColor = ConsoleColor.Blue;
+                    break;
+                case "yellow":
+                    Console.ForegroundColor = ConsoleColor.Yellow;
+                    break;
+                case "red":
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    break;
+                case "magenta":
+                    Console.ForegroundColor = ConsoleColor.Magenta;
+                    break;
+                case "green":
+                    Console.ForegroundColor = ConsoleColor.Green;
+                    break;
+                case "gray":
+                    Console.ForegroundColor = ConsoleColor.Gray;
+                    break;
+                case "darkyellow":
+                    Console.ForegroundColor = ConsoleColor.DarkYellow;
+                    break;
+                case "darkred":
+                    Console.ForegroundColor = ConsoleColor.DarkRed;
+                    break;
+                case "darkgreen":
+                    Console.ForegroundColor = ConsoleColor.DarkGreen;
+                    break;
+                case "darkgray":
+                    Console.ForegroundColor = ConsoleColor.DarkGray;
+                    break;
+                case "darkcyan":
+                    Console.ForegroundColor = ConsoleColor.DarkCyan;
+                    break;
+                case "darkblue":
+                    Console.ForegroundColor = ConsoleColor.DarkBlue;
+                    break;
+                case "cyan":
+                    Console.ForegroundColor = ConsoleColor.Cyan;
+                    break;
+                default:
+                    Console.ForegroundColor = ConsoleColor.White;
+                    break;
+            }
+
+            switch (_background)
+            {
+                case "blue":
+                    Console.BackgroundColor = ConsoleColor.Blue;
+                    break;
+                case "yellow":
+                    Console.BackgroundColor = ConsoleColor.Yellow;
+                    break;
+                case "red":
+                    Console.BackgroundColor = ConsoleColor.Red;
+                    break;
+                case "magenta":
+                    Console.BackgroundColor = ConsoleColor.Magenta;
+                    break;
+                case "green":
+                    Console.BackgroundColor = ConsoleColor.Green;
+                    break;
+                case "gray":
+                    Console.BackgroundColor = ConsoleColor.Gray;
+                    break;
+                case "darkyellow":
+                    Console.BackgroundColor = ConsoleColor.DarkYellow;
+                    break;
+                case "darkred":
+                    Console.BackgroundColor = ConsoleColor.DarkRed;
+                    break;
+                case "darkgreen":
+                    Console.BackgroundColor = ConsoleColor.DarkGreen;
+                    break;
+                case "darkgray":
+                    Console.BackgroundColor = ConsoleColor.DarkGray;
+                    break;
+                case "darkcyan":
+                    Console.BackgroundColor = ConsoleColor.DarkCyan;
+                    break;
+                case "darkblue":
+                    Console.BackgroundColor = ConsoleColor.DarkBlue;
+                    break;
+                case "cyan":
+                    Console.BackgroundColor = ConsoleColor.Cyan;
+                    break;
+                default:
+                    Console.BackgroundColor = ConsoleColor.White;
+                    break;
+            }
+
+            WriteLine(_string);
+            Console.ResetColor();
         }
 
         public static void Write(string _string)
         {
             _string = _string.Replace("\n", $"\n {margin}");
-            Console.WriteLine(margin + _string);
+            Console.Write(margin + _string);
         }
 
         public static void Write(string _string, string _color)

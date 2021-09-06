@@ -4,6 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+/*
+ *  To DO
+ *  Clean up, improve selection
+ *  make game balancing easier
+ */
+
 namespace HeroVsMonster
 { 
     public static class Monsters
