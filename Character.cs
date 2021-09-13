@@ -20,7 +20,7 @@ namespace HeroVsMonster
         public static int DeffenceEndurance;
         public static int Wallet;
 
-        public static List<string> PreafearedWeapon = new List<string>();
+        public static List<string> PreferedWeapon = new List<string>();
         public static string[,] DefenceType = { {"Head", "None" }, { "Chest", "None" }, { "Arms", "None" }, { "Legs", "None" }, { "Boots", "None" }, };
         public static List<string> Inventory = new List<string>();
 
@@ -120,34 +120,33 @@ namespace HeroVsMonster
             switch (Player.Class)
             {
                 case "Warrior":
-                    Player.Defence.Add("Steel");
+                    //Player.Defence.Add("Steel");
                     Player.PreferedWeapon.Add("GreatSword");
                     Player.PreferedWeapon.Add("Sword");
                     Player.PreferedWeapon.Add("Mace");
                     break;
 
                 case "Mage":
-                    Player.Defence.Add("Archane");
+                    //Player.Defence.Add("Archane");
                     Player.PreferedWeapon.Add("Wand");
                     Player.PreferedWeapon.Add("Staff");
                     break;
 
                 case "Archer":
-                    Player.Defence.Add("Leather");
+                    //Player.Defence.Add("Leather");
                     Player.PreferedWeapon.Add("Bow");
                     Player.PreferedWeapon.Add("CrossBow");
                     break;
 
                 case "Munk":
-                    Player.Defence.Add("Faith");
+                    //Player.Defence.Add("Faith");
                     Player.PreferedWeapon.Add("Staff");
                     Player.PreferedWeapon.Add("Umbrella");
                     Player.PreferedWeapon.Add("Fists");
                     break;
 
                 default:    //Farmer
-                    Player.Defence.Add(((DefenceType)_random.Next(0, Enum.GetValues(typeof(DefenceType))
-                        .GetUpperBound(0))).ToString());
+                    //Player.Defence.Add(((DefenceType)_random.Next(0, Enum.GetValues(typeof(DefenceType)).GetUpperBound(0))).ToString());
                     Player.Health += 100;
                     Player.PreferedWeapon.Add("Pitchfork");
                     Player.PreferedWeapon.Add("Shovel");
@@ -156,7 +155,6 @@ namespace HeroVsMonster
             }
 
             Game.SaveGame();
-            GamePlay.Loop();
         }
     }
 
@@ -179,11 +177,12 @@ namespace HeroVsMonster
             switch (Class)
             {
                 default: //"Orc"
-                    Defence.Add("ThickHide");
+                    //Defence.Add("ThickHide");
                     Health = 75 * Level;
-                    Purse = _random.Next(0, (Level * 3));
+                    Wallet = _random.Next(0, (Level * 3));
 
                     //Adds DefenceAttributes
+                    /*
                     if (Level % 3 > 0)
                     {
                         for (int i = 0; i < (Level % 3); i++)
@@ -204,6 +203,7 @@ namespace HeroVsMonster
                     // PreferedWeapon.Add();
                     PreferedWeapon.Add("MakeShiftSword"); PreferedWeapon.Add("Fists"); PreferedWeapon.Add("Mace");
                     // Inventory.Add();
+                    */
 
                     // Selecting Weapon
                     int _MonsterWeapon = _random.Next(0, Enum.GetValues(typeof(MonsterWeapon)).GetUpperBound(0));
@@ -212,10 +212,10 @@ namespace HeroVsMonster
                     break;
 
                 case "Gobblin":
-                    Defence.Add("Leather");
+                    //Defence.Add("Leather");
                     Health = 35 * Level;
-                    Purse = _random.Next(0, (Level * 3));
-
+                    Wallet = _random.Next(0, (Level * 3));
+                    /*
                     //Adds DefenceAttributes
                     if (Level % 3 > 0)
                     {
@@ -233,7 +233,7 @@ namespace HeroVsMonster
                         int _defence = _random.Next(0, Enum.GetValues(typeof(DefenceType)).GetUpperBound(0));
                         Defence.Add(((DefenceType)_defence).ToString());
                     }
-
+                    */
                     // PreferedWeapon.Add();
                     PreferedWeapon.Add("GobblinWand"); PreferedWeapon.Add("Pebbles"); PreferedWeapon.Add("WoodenClub");
                     // Inventory.Add();
@@ -245,10 +245,10 @@ namespace HeroVsMonster
                     break;
 
                 case "Giant":
-                    Defence.Add("ThickHide");
+                    //Defence.Add("ThickHide");
                     Health = 105 * Level;
-                    Purse = _random.Next(0, (Level * 3));
-
+                    Wallet = _random.Next(0, (Level * 3));
+                    /*
                     //Adds DefenceAttributes
                     if (Level % 3 > 0)
                     {
@@ -266,7 +266,7 @@ namespace HeroVsMonster
                         int _defence = _random.Next(0, Enum.GetValues(typeof(DefenceType)).GetUpperBound(0));
                         Defence.Add(((DefenceType)_defence).ToString());
                     }
-
+                    */
                     // PreferedWeapon.Add();
                     PreferedWeapon.Add("TreeTrunk"); PreferedWeapon.Add("WoodenClub");
                     // Inventory.Add();
@@ -278,10 +278,10 @@ namespace HeroVsMonster
                     break;
 
                 case "Wizard":
-                    Defence.Add("Archane");
+                    //Defence.Add("Archane");
                     Health = 75 * Level;
-                    Purse = _random.Next(0, (Level * 3));
-
+                    Wallet = _random.Next(0, (Level * 3));
+                    /*
                     //Adds DefenceAttributes
                     if (Level % 3 > 0)
                     {
@@ -299,7 +299,7 @@ namespace HeroVsMonster
                         int _defence = _random.Next(0, Enum.GetValues(typeof(DefenceType)).GetUpperBound(0));
                         Defence.Add(((DefenceType)_defence).ToString());
                     }
-
+                    */
                     // PreferedWeapon.Add();
                     PreferedWeapon.Add("GobblinWand"); PreferedWeapon.Add("Wand"); PreferedWeapon.Add("Staff");
                     // Inventory.Add();
@@ -314,15 +314,15 @@ namespace HeroVsMonster
                     {
                         _weaponsToChoose.Add(((PlayerWeapons)i).ToString());
                     }
-                    Weapon = _weaponsToChoose[_random.Next(0, _weaponsToChoose.Count())];
+                    Weapon = _weaponsToChoose[_random.Next(0, _weaponsToChoose.Count)];
 
                     break;
 
                 case "FallenAngel":
-                    Defence.Add("Archane");
+                    //Defence.Add("Archane");
                     Health = 95 * Level;
-                    Purse = _random.Next(0, (Level * 3));
-
+                    Wallet = _random.Next(0, (Level * 3));
+                    /*
                     //Adds DefenceAttributes
                     if (Level % 3 > 0)
                     {
@@ -340,7 +340,7 @@ namespace HeroVsMonster
                         int _defence = _random.Next(0, Enum.GetValues(typeof(DefenceType)).GetUpperBound(0));
                         Defence.Add(((DefenceType)_defence).ToString());
                     }
-
+                    */
                     // PreferedWeapon.Add();
                     PreferedWeapon.Add("Sword"); PreferedWeapon.Add("Bow"); PreferedWeapon.Add("CrossBow");
                     PreferedWeapon.Add("GreatSword");
@@ -356,15 +356,15 @@ namespace HeroVsMonster
                     {
                         _weaponsToChoose.Add(((PlayerWeapons)i).ToString());
                     }
-                    Weapon = _weaponsToChoose[_random.Next(0, _weaponsToChoose.Count())];
+                    Weapon = _weaponsToChoose[_random.Next(0, _weaponsToChoose.Count)];
 
                     break;
 
                 case "DarkElf":
-                    Defence.Add("ChainMail");
+                    //Defence.Add("ChainMail");
                     Health = 85 * Level;
-                    Purse = _random.Next(0, (Level * 3));
-
+                    Wallet = _random.Next(0, (Level * 3));
+                    /*
                     //Adds DefenceAttributes
                     if (Level % 3 > 0)
                     {
@@ -382,17 +382,17 @@ namespace HeroVsMonster
                         int _defence = _random.Next(0, Enum.GetValues(typeof(DefenceType)).GetUpperBound(0));
                         Defence.Add(((DefenceType)_defence).ToString());
                     }
-
+                    */
                     // PreferedWeapon.Add();
                     PreferedWeapon.Add("Staff"); PreferedWeapon.Add("Bow"); PreferedWeapon.Add("GreatSword");
                     // Inventory.Add();
                     break;
 
                 case "BlackDwarves":
-                    Defence.Add("Steel");
+                    //Defence.Add("Steel");
                     Health = 105 * Level;
-                    Purse = _random.Next(0, (Level * 3));
-
+                    Wallet = _random.Next(0, (Level * 3));
+                    /*
                     //Adds DefenceAttributes
                     if (Level % 3 > 0)
                     {
@@ -410,7 +410,7 @@ namespace HeroVsMonster
                         int _defence = _random.Next(0, Enum.GetValues(typeof(DefenceType)).GetUpperBound(0));
                         Defence.Add(((DefenceType)_defence).ToString());
                     }
-
+                    */
                     // PreferedWeapon.Add();
                     PreferedWeapon.Add("Sword"); PreferedWeapon.Add("CrossBow"); PreferedWeapon.Add("GreatSword");
                     PreferedWeapon.Add("Mace"); PreferedWeapon.Add("Fists");
@@ -426,15 +426,16 @@ namespace HeroVsMonster
                     {
                         _weaponsToChoose.Add(((PlayerWeapons)i).ToString());
                     }
-                    Weapon = _weaponsToChoose[_random.Next(0, _weaponsToChoose.Count())];
+                    Weapon = _weaponsToChoose[_random.Next(0, _weaponsToChoose.Count)];
 
                     break;
             }
-
+            /*
             // Adds a predefined random selection of items for the monster;
             string[] _ekstraDefence = { "Leather Armor" };
             int _ekstra = _random.Next(1, _ekstraDefence.GetLength(0));
             for (int i = 0; i < _ekstra; i++) { Defence.Add(_ekstraDefence[i]); }
+            */
         }
 
     }

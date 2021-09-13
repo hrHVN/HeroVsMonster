@@ -131,7 +131,7 @@ namespace HeroVsMonster
                             {
                                 Utility.WriteLine("You have no prior Savegames..");
                                 Console.ReadKey();
-                                Game.ConsoleStartMenu();
+                                //Game.ConsoleStartMenu();
                             }
                             break;
 

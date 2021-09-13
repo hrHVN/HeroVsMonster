@@ -54,6 +54,7 @@ namespace HeroVsMonster
             return _damage;
         }
 
+    /*
         public static void Figth()
         {
             
@@ -84,7 +85,7 @@ namespace HeroVsMonster
             if Inventory.contains("Oil") Then explode + Firedamage
             */
 
-
+        /*
             do
             {
                 if ((Player.Class == "Mage") || (Player.Class == "Munk")) { }
@@ -123,8 +124,8 @@ namespace HeroVsMonster
                 Utility.Write($"Final Level: {Player.Level} \nMonsters beaten: {MonstersBeaten}");
             }*/
 
-        } 
-        
+     //   } 
+       /* 
         public static int AttackMultiplier(string _attacker)
         // Function that calculates (Weapon skill + Weapon type - Defence) x  Level, reurns Multiplikasjon(int)
         {
@@ -341,10 +342,7 @@ namespace HeroVsMonster
 
             return (int)_result;
         }
-
-        
-
-
+        */
     }
 }
 
