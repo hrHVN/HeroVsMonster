@@ -24,15 +24,16 @@ namespace HeroVsMonster
     public static class Game
     {
         //Head
-        static string pName = "A";
-        static int pXp;
-        static int pLevel;
-        static string storyline_area = "Error level";
-        static string subHeader; // Write Monster and level up notifications
-
+        public static string pName = "";
+        public static int pXp;
+        public static int pLevel;
+        public static string storyline_area = "";
+        public static string subHeader; // Write Monster and level up notifications
+        public static string MenuName = "Hero Vs Monseters";
+        public static string consoleColor = "";
         // Main window
         // 25 Wide + 15 High
-        static string[] AvatarP = { 
+        public static string[] AvatarP = { 
             "@@@@@ ##### ##### ##### @@@@@", 
             "##### ##### ##### ##### #####",
             "##### ##### ##### ##### #####",
@@ -50,7 +51,7 @@ namespace HeroVsMonster
             "@@@@@ ##### ##### ##### @@@@@"
         };
 
-        static string[] sidebarP = {
+        public static string[] sidebarP = {
             "##### ##### ##### ", 
             " ",
             $" Hp: {Player.Health}",
@@ -67,8 +68,8 @@ namespace HeroVsMonster
             " ",
             "##### ##### ##### "
         };
-        
-        static string[] AvatarM = {
+
+        public static string[] AvatarM = {
             "##### ##### ##### ##### #####",
             "##### ##### ##### ##### #####",
             "##### ##### ##### ##### #####",
@@ -86,7 +87,7 @@ namespace HeroVsMonster
             "##### ##### ##### ##### #####"
         };
 
-        static string[] sidebarM = {
+        public static string[] sidebarM = {
             "##### ##### ##### ",
             $" Hp: {Monsters.Health} ",
             " ",
@@ -105,13 +106,14 @@ namespace HeroVsMonster
         };
 
         // Dialogue Window
-        static string nPcDialogue;  //Dialogue
-        static string[] pResponce;  //Options
-        static string pChoice;      //Input
+        public static string nPcDialogue = "";  //Dialogue
+        public static string[] pResponce = { };  //Options
+        public static string pChoice;      //Input
 
         // Bools
         public static bool update = false;
-        public static bool figth = true;
+        public static bool figth = false;
+        public static bool GameRun = false;
 
         public static void StartGame() // Logic to itterate trough the game sequence
         {
@@ -125,17 +127,25 @@ namespace HeroVsMonster
             {
                 for (int i = 0; i < 15; i++)
                 {
-                    Console.WriteLine(WindowDrawing(sidebarP[i], 20, false, false)+" " + WindowDrawing(AvatarP[i], 30, false, false) + "  " 
-                        + WindowDrawing(AvatarM[i], 30, false, false) + " " + WindowDrawing(sidebarM[i], 20, true, false));
+                    Console.WriteLine(
+                        WindowDrawing(sidebarP[i], 20, false, false)
+                        + " " 
+                        + WindowDrawing(AvatarP[i], 30, false, false) 
+                        + "  " 
+                        + WindowDrawing(AvatarM[i], 30, false, false) 
+                        + " " 
+                        + WindowDrawing(sidebarM[i], 20, true, false)
+                        );
                 }
             }
             else
             {
                 for (int i = 0; i < 15; i++)
                 {
-                    Console.Write(WindowDrawing(AvatarP[i], 30, false, false) + "  " + WindowDrawing(AvatarM[i], 70, true, true));
+                    Console.Write(WindowDrawing(AvatarP[i], 30, false, true) + "  " + WindowDrawing(AvatarM[i], 74, true, true));
                 }
             }
+            Console.WriteLine("\n ");
             DialogueWindow();
         }
 
@@ -143,36 +153,38 @@ namespace HeroVsMonster
 
         public static void PlayerCreation() { }
 
-        public static void HeadWindow() 
+        public static void HeadWindow()
         {
             int lvl = Player.Level + 1;
             int prosent = (Player.Xp / Player._nextLevel) * 100;
-            string _xProgress = "";
+            string _xProgress;
+            string _XpColor;
 
-            if (prosent <= 100 && prosent > 90) _xProgress = $"XP: >~~~~~~|{prosent}%|~~~~~~>({lvl})";
-            else if(prosent <= 10 && prosent > 5) _xProgress = $"XP: >~|{prosent}%|~>           ({lvl})";
-            else if (prosent <= 20 && prosent > 10) _xProgress = $"XP: >~~|{prosent}%|~>          ({lvl})";
-            else if (prosent <= 30 && prosent > 20) _xProgress = $"XP: >~~|{prosent}%|~~>         ({lvl})";
-            else if(prosent <= 40 && prosent > 30) _xProgress = $"XP: >~~~|{prosent}%|~~>        ({lvl})";
-            else if(prosent <= 50 && prosent > 40) _xProgress = $"XP: >~~~|{prosent}%|~~~>       ({lvl})";
-            else if(prosent <= 60 && prosent > 50) _xProgress = $"XP: >~~~~|{prosent}%|~~~~>     ({lvl})";
-            else if(prosent <= 70 && prosent > 60) _xProgress = $"XP: >~~~~~|{prosent}%|~~~~>    ({lvl})";
-            else if(prosent <= 80 && prosent > 70) _xProgress = $"XP: >~~~~~|{prosent}%|~~~~~>   ({lvl})";
-            else if(prosent <= 90 && prosent > 80) _xProgress = $"XP: >~~~~~~|{prosent}%|~~~~~>  ({lvl})";
-            else _xProgress = $"XP: >|{prosent}%|>             ({lvl})";
+            if (GameRun)
+            {
+                if (prosent <= 100 && prosent > 90) { _xProgress = $"XP: #######|{prosent}%|######> ({lvl})"; _XpColor = "green"; }
+                else if (prosent <= 90 && prosent > 80) { _xProgress = $"XP: #######|{prosent}%|#####>  ({lvl})"; _XpColor = "green"; }
+                else if (prosent <= 80 && prosent > 70) { _xProgress = $"XP: ######|{prosent}%|#####>   ({lvl})"; _XpColor = "darkgreen"; }
+                else if (prosent <= 70 && prosent > 60) { _xProgress = $"XP: ######|{prosent}%|####>    ({lvl})"; _XpColor = "yellow"; }
+                else if (prosent <= 60 && prosent > 50) { _xProgress = $"XP: #####|{prosent}%|####>     ({lvl})"; _XpColor = "yellow"; }
+                else if (prosent <= 50 && prosent > 40) { _xProgress = $"XP: ####|{prosent}%|###>       ({lvl})"; _XpColor = "darkyellow"; }
+                else if (prosent <= 40 && prosent > 30) { _xProgress = $"XP: ####|{prosent}%|##>        ({lvl})"; _XpColor = "darkyellow"; }
+                else if (prosent <= 30 && prosent > 20) { _xProgress = $"XP: ###|{prosent}%|##>         ({lvl})"; _XpColor = "red"; }
+                else if (prosent <= 20 && prosent > 10) { _xProgress = $"XP: ##|{prosent}%|#>          ({lvl})"; _XpColor = "red"; }
+                else if (prosent <= 10 && prosent > 5) { _xProgress = $"XP: #|{prosent}%|#>           ({lvl})"; _XpColor = "darkred"; }
+                else { _xProgress = $"XP: |{prosent}%|>             ({lvl})"; _XpColor = "darkred"; }
+            }
+            else { _xProgress = MenuName; _XpColor = "magenta"; }
+            PrintTheBorder("#", consoleColor);
+            Console.WriteLine("  ");
 
-            PrintTheBorder("#");
-            Console.WriteLine("\t");
+            Utility.Write(HeaderTextAlign(pName));
+            Utility.Write(HeaderTextAlign(_xProgress), _XpColor);
+            Utility.Write(HeaderTextAlign(storyline_area));
 
-            Console.WriteLine(
-                HeaderTextAlign(pName) +
-                HeaderTextAlign(_xProgress) +
-                HeaderTextAlign(storyline_area)
-                ); ;
-
-            Console.WriteLine("\t");
-            PrintTheBorder("#");
-            Console.WriteLine("\t");
+            Console.WriteLine("  ");
+            PrintTheBorder("#", consoleColor);
+            Console.WriteLine("  ");
 
             if (subHeader == "")
             {
@@ -180,6 +192,33 @@ namespace HeroVsMonster
                 Console.WriteLine("\t");
                 PrintTheBorder("_");
             }
+        }
+        
+        public static void DialogueWindow() 
+        {
+            PrintTheBorder("#", consoleColor);
+
+            if (nPcDialogue.Length < 1) Utility.WriteLine("\n  \n");
+            else Utility.WriteLine("\n" + nPcDialogue + "\n ");
+            
+            
+            int xChoice = 1;
+            if (pResponce.Length == 0)
+            {
+                Console.WriteLine("\n \n "); 
+            }
+            else
+            {
+                PrintTheBorder("~", consoleColor);
+                
+                foreach (string x in pResponce) { Console.WriteLine($"<{xChoice}> " + x); xChoice++; }
+
+                PrintTheBorder("#", consoleColor);
+                Console.WriteLine(" ");
+                pChoice = Utility.Input("Choice");
+            }
+
+            PrintTheBorder("#", consoleColor);
         }
 
         static string HeaderTextAlign(string _string)
@@ -202,8 +241,6 @@ namespace HeroVsMonster
             string _centerA = "";
             string _centerB = "";
 
-            string _stringB = "";
-
             if (_reversed || _centered)
             {
                 if (_centered)
@@ -216,16 +253,16 @@ namespace HeroVsMonster
                 }
                 else for (int i = 0; i < _spaces; i++) _centerA += " ";
             }
-            else { for (int i = 0; i < _spaces; i++) _string += " "; }
+            else { for (int i = 0; i < _spaces; i++) _centerB += " "; }
 
-            _stringB = _centerA + _string + _centerB;
-
+            string _stringB = _centerA + _string + _centerB;
+            _string = _string + _centerB;
             return _reversed ? _stringB : _string;
         }
 
-        static void PrintTheBorder(string _border) 
-        { 
-            for (int i = 0; i <= 104; i++) Console.Write(_border); 
+        static void PrintTheBorder(string _border)
+        {
+            for (int i = 0; i <= 104; i++) Console.Write(_border);
         }
 
         static void PrintTheBorder(string _border, string _color)
@@ -278,13 +315,11 @@ namespace HeroVsMonster
                     break;
             }
 
-            for (int i = 0; i <= 88; i++) Console.Write(_border);
+            for (int i = 0; i <= 104; i++) Console.Write(_border);
             Console.ResetColor();
         }
 
-        public static void DialogueWindow() { }
-
-        public static void LoadGame(string _save) 
+        public static void LoadGame(string _save)
         {
             string path = @"C:\Users\Andreas\source\repos\HeroVsMonster\saves\";
             StreamReader sr = new StreamReader(_save + ".txt");
@@ -296,7 +331,7 @@ namespace HeroVsMonster
             Player.Xp = Convert.ToInt16(sr.ReadLine());
             Player.Weapon = sr.ReadLine();
             Player.Wallet = Convert.ToInt16(sr.ReadLine());
-            
+
             string line = sr.ReadLine();
             while (line != null)
             {
@@ -308,11 +343,11 @@ namespace HeroVsMonster
             Utility.Pause();
         }
 
-        public static void SaveGame() 
+        public static void SaveGame()
         {
             try
             {
-            // C: \Users\Andreas\source\repos\HeroVsMonster\saves\
+                // C: \Users\Andreas\source\repos\HeroVsMonster\saves\
 
                 string _path = @"C:\Users\Andreas\source\repos\HeroVsMonster\saves\";
                 StreamWriter sw = new StreamWriter(_path + $"{Player.Name}.txt", false);
@@ -326,16 +361,16 @@ namespace HeroVsMonster
                 foreach (string inv in Player.Inventory) { sw.WriteLine(inv); }
                 sw.Close();
             }
-            catch(Exception e) { Utility.WriteLine("Exception: " + e.Message); }
+            catch (Exception e) { Utility.WriteLine("Exception: " + e.Message); }
 
             Utility.WriteLine(Utility.Center("Game Saved!"), "cyan");
             Utility.Pause();
         }
 
-        public static void ExitGame() 
-        {
-            string credits =
-                @"
+        public static void ExitGame()
+                {
+                    string credits =
+                        @"
 
 
                Thank you for playing HeroVsMonster.
@@ -356,10 +391,38 @@ namespace HeroVsMonster
     http://programmingisfun.com/learn/c-sharp-adventure-game/
 
 ";
-            Utility.WriteLine(credits, "yellow");
-            Utility.Pause();
-            Environment.Exit(1); 
-        }
+                    Utility.WriteLine(credits, "yellow");
+                    Utility.Pause();
+                    Environment.Exit(1);
+                }
 
+        public static void SplashScreen() // Splash screen to display Game Title and first impression
+        {
+            string Title = @"
+
+                     ██░ ██ ▓█████  ██▀███   ▒█████    ██████     ██▒   █▓  ██████            
+                    ▓██░ ██▒▓█   ▀ ▓██ ▒ ██▒▒██▒  ██▒▒██    ▒    ▓██░   █▒▒██    ▒            
+                    ▒██▀▀██░▒███   ▓██ ░▄█ ▒▒██░  ██▒░ ▓██▄       ▓██  █▒░░ ▓██▄              
+                    ░▓█ ░██ ▒▓█  ▄ ▒██▀▀█▄  ▒██   ██░  ▒   ██▒     ▒██ █░░  ▒   ██▒           
+                    ░▓█▒░██▓░▒████▒░██▓ ▒██▒░ ████▓▒░▒██████▒▒      ▒▀█░  ▒██████▒▒           
+                     ▒ ░░▒░▒░░ ▒░ ░░ ▒▓ ░▒▓░░ ▒░▒░▒░ ▒ ▒▓▒ ▒ ░      ░ ▐░  ▒ ▒▓▒ ▒ ░           
+                     ▒ ░▒░ ░ ░ ░  ░  ░▒ ░ ▒░  ░ ▒ ▒░ ░ ░▒  ░ ░      ░ ░░  ░ ░▒  ░ ░           
+                     ░  ░░ ░   ░     ░░   ░ ░ ░ ░ ▒  ░  ░  ░          ░░  ░  ░  ░             
+                     ░  ░  ░   ░  ░   ░         ░ ░        ░           ░        ░             
+                                                                      ░                       
+                     ███▄ ▄███▓ ▒█████   ███▄    █   ██████ ▄▄▄█████▓▓█████  ██▀███    ██████ 
+                    ▓██▒▀█▀ ██▒▒██▒  ██▒ ██ ▀█   █ ▒██    ▒ ▓  ██▒ ▓▒▓█   ▀ ▓██ ▒ ██▒▒██    ▒ 
+                    ▓██    ▓██░▒██░  ██▒▓██  ▀█ ██▒░ ▓██▄   ▒ ▓██░ ▒░▒███   ▓██ ░▄█ ▒░ ▓██▄   
+                    ▒██    ▒██ ▒██   ██░▓██▒  ▐▌██▒  ▒   ██▒░ ▓██▓ ░ ▒▓█  ▄ ▒██▀▀█▄    ▒   ██▒
+                    ▒██▒   ░██▒░ ████▓▒░▒██░   ▓██░▒██████▒▒  ▒██▒ ░ ░▒████▒░██▓ ▒██▒▒██████▒▒
+                    ░ ▒░   ░  ░░ ▒░▒░▒░ ░ ▒░   ▒ ▒ ▒ ▒▓▒ ▒ ░  ▒ ░░   ░░ ▒░ ░░ ▒▓ ░▒▓░▒ ▒▓▒ ▒ ░
+                    ░  ░      ░  ░ ▒ ▒░ ░ ░░   ░ ▒░░ ░▒  ░ ░    ░     ░ ░  ░  ░▒ ░ ▒░░ ░▒  ░ ░
+                    ░      ░   ░ ░ ░ ▒     ░   ░ ░ ░  ░  ░    ░         ░     ░░   ░ ░  ░  ░  
+                           ░       ░ ░           ░       ░              ░  ░   ░           ░  
+                                                                                                                                    
+          ";
+            Console.WriteLine(Title);
+            Utility.Pause();
+        }
     }
 }
