@@ -7,74 +7,138 @@ namespace HeroVsMonster
     {
         static double AttackStrength;
         static string AttackType;
+        static int _defenceArray;
 
-        static void Weapon()
+        static void Weapon(string _weapon, string _class) // Function Returns AttackStrength and AttackType 
         {
-            string[] bluntWeapons = { "Mace", "Staff", "Fists", "Umbrella", "WoodenClub", "TreeTrunk", "Pebbles", "Staff", "Fists" };
-            string[] sharpWeapons = { "PitchFork", "Sword", "GreatSword", "Shovel", "Bow", "CrossBow", "MakeShiftSword" };
-            string[] magicWeapons = { "Wand", "GobblinWand", "Staff" };
-            string[] holyWeapons = { "Wand", "Umbrella", "Staff" };
-
-            // is eiter Sharp or blunt
-            // if magic or holy class -> if magic/holy prefered weapon -> attacktype = magic/holy 
-            // else -> attacktype = sharp/blunt
+            int WeaponBonus;
+            // if magic or holy class -> if weapon is prefered weapon -> attacktype = magic/holy >> else -> attacktype = sharp/blunt
+            if (EnumHelper.IsParsable<MagicClass>(_class) || EnumHelper.IsParsable<HolyClass>(_class))
+            {
+                if (Player.PreferedWeapon.Contains(_weapon) || Monsters.PreferedWeapon.Contains(_weapon))
+                {
+                    AttackType = EnumHelper.IsParsable<MagicClass>(_class) ? "Magic" : "Holy";
+                    _defenceArray = EnumHelper.IsParsable<MagicClass>(_class) ? 3 : 4;
+                }
+            }
+            else // is eiter Sharp or blunt
+            {
+                if (EnumHelper.IsParsable<SharpWeapons>(_weapon)) // Does Enum Sharp Weapons contain _weapon??
+                {
+                    AttackType = "Sharp";
+                    _defenceArray = 2;
+                }
+                AttackType = "Blunt";
+                _defenceArray = 1;
+            }
 
             // if prefered weapon -> Weaponbonus +1 : else - 2
+            if (Player.PreferedWeapon.Contains(_weapon) || Monsters.PreferedWeapon.Contains(_weapon)) { WeaponBonus = 1; }
+            else { WeaponBonus = -2; }
 
             // double AttackStrength = Weaponprofficency + Weaponbonus
-
-            // Returns AttackStrength and AttackType
+            AttackStrength = EnumHelper.IsParsable<PlayerClass>(_class) ? (Player.WeaponProffeciency + WeaponBonus) : (Monsters.WeaponProffeciency + WeaponBonus);
         }
 
-        static void Defence()
+        static double Defence(string _class, string _armorPice) // Function returns defence value for specified armorpice
         {
-            // type : (resistance value)
-            // type: Blunt : Sharp : Magic : Holy
-            // defalut= None = 1 : 1 : 1 : 1 
-            string[,] _defenceDamage = new string[6, 5]
+            double _defVal = 0.0;
+
+            // Def_type > Blunt : Sharp : Magic : Holy
+            // defalut is None/ThickHide = 1 : 1 : 1 : 1 
+            string[,] _defenceDamage =
             {
-                { "None", "1", "1","1", "1" },
-                { "Archane" , "1" , "2", "0.3", "0.7"},
+                { "None", "1", "1","1", "1" }, { "ThickHide", "1", "1","1", "1" },
+                { "Archane", "1" , "2", "0.3", "0.7"},
                 { "Faith", "1", "2", "0.7", "0.3"},
                 { "Steel", "0.3", "0.3", "2", "2"},
                 { "Leather", "0.7", "0.5", "1.5", "1,5"},
                 { "ChainMail", "0.5", "0.3", "2", "2"}
             };
 
+            // Loop throug bodypart_armor to find right value
+            for (int i = 0; i <= 5; i++)
+            {
+                if (EnumHelper.IsParsable<PlayerClass>(_class)) // If player
+                { 
+                    if (Player.DefenceType[i, 0].ToLower() == _armorPice.ToLower()) // If head == Head
+                    {
+                        int d = 0;
+                        while (Player.DefenceType[i, 1].ToLower() != _defenceDamage[d, 0].ToLower()) // Find array pos == ArmorType("Leather")
+                        { 
+                            d++; 
+                        } 
+                        _defVal = Convert.ToDouble(_defenceDamage[d, _defenceArray]);  // Set the defence value(Leather) vs AttackType(Magic) = 1.5;
+                        break;
+                    }
+                } 
+                else 
+                { 
+                    if (Monsters.DefenceType[i, 0].ToLower() == _armorPice.ToLower())
+                    {
+                        int d = 0;
+                        while (Player.DefenceType[i, 1].ToLower() != _defenceDamage[d, 0].ToLower())
+                        {
+                            d++;
+                        }
+                        _defVal = Convert.ToDouble(_defenceDamage[d, _defenceArray]);
+                        break;
+                    } 
+                }
+
+            }
+
+            return _defVal;
         }
 
-        public static int DamageGiven(int _attackValue)
+        public static double DamageGiven(int _dice, string _class) // 
         {
-            int _damage = 0;
-            double head = 7.5, chest = 66.0, arms = 16.5, legs = 16.0, boots = 4.0;
+            double _damage = 0;
+            // Double value = Percentage of damage reccived at location (aka defence priority)
+            string[,] _armorSlot = { { "head", "7.5" }, { "chest", "66.0" }, { "arms", "16.5" }, { "legs", "16.0" }, { "boots", "4.0" } };
 
-            //_attackValue = Dice * AttackStrength
-            //int Dn = (_attackValue * Defence.Location[Head] %) * (AttackType[Holy] * DefenceType[Cloth]);
+            double _attackValue = _dice * AttackStrength;
+
+            for (int i = 0; i <= 5; i++)
+            {
+                _damage += _attackValue * Convert.ToDouble(_armorSlot[i, 1]) * Defence(_class, _armorSlot[i, 0]);
+            }
 
             return _damage;
         }
 
-    /*
+        public static void InitializeFight()
+        {
+            double _defVal = 0;
+            string[] _armorSlot = { "head", "chest","arms","legs", "boots"};
+
+            for (int i = 0; i <= 5; i++)
+            {
+                _defVal += Defence(Player.Class, _armorSlot[i]);
+            }
+            Weapon(Player.Weapon, Player.Class);
+            Game.pAttStr = AttackStrength;
+            Game.pDefValue = _defVal;
+
+            _defVal = 0;
+            for (int i = 0; i <= 5; i++)
+            {
+                _defVal += Defence(Monsters.Class, _armorSlot[i]);
+            }
+            Weapon(Monsters.Weapon, Monsters.Class);
+            Game.mAttStr = AttackStrength;
+            Game.mDefValue = _defVal;
+        }
+
         public static void Figth()
         {
-            
-
-            // defenceType_Vs_DamageType = (Blunt - Sharp - Magic - Holy)
-            string[,] _defenceDamage = new string[6, 5]
-            {
-                {"None", "1", "1","1", "1" },
-                { "Archane" , "1" , "2", "0.3", "0.7"},
-                { "Faith", "1", "2", "0.7", "0.3"},
-                { "Steel", "0.3", "0.3", "2", "2"},
-                { "Leather", "0.7", "0.5", "1.5", "1,5"},
-                { "ChainMail", "0.5", "0.3", "2", "2"}
-            };
-
-            string _class;
-            string _weapon;
-            List<string> _prefWeapon = new List<string>();
-
-            string _defence;
+            Random _random = new Random();
+            // Spawn Monster
+            // Save Game
+            // Calculate the Defence and attack values
+            InitializeFight();
+            // Loop
+            // VictoryConditions
 
             /*
             bool Parry = (DamageType == (ranged || Magic || Holy)) ? false : true;
@@ -85,29 +149,27 @@ namespace HeroVsMonster
             if Inventory.contains("Oil") Then explode + Firedamage
             */
 
-        /*
             do
             {
-                if ((Player.Class == "Mage") || (Player.Class == "Munk")) { }
+                Weapon(Player.Weapon, Player.Class); // Set the Stats
+                int damage = (int) DamageGiven(Utility.DiceRoll(), Player.Class); // the initial damage
 
-                foreach (string d in _defenceDamage)
+                // Parry chance for ranged weapons
+                bool Parry = EnumHelper.IsParsable<RangedWeapons>(Player.Weapon) || EnumHelper.IsParsable<MagicWeapons>(Player.Weapon) || EnumHelper.IsParsable<HolyWeapons>(Player.Weapon) ? true : false;
+                if (Parry)
                 {
-                    for (int di = 0; di < 5; di++)
-                    {
-                        if (_defenceDamage[di, 0] == d)
-                        {
-                            //if (Player.Weapon) { }
-                        }
-                    }
+                    int _parry = _random.Next(0, 1);
+                    damage = (int) (damage * (1-0.75));
                 }
 
-                if (Monsters.Health <= 0) continue;
+                if (Monsters.Health < 0) continue;
 
+                Weapon(Monsters.Weapon, Monsters.Class);
             }
             while (Player.Health > 0 && Monsters.Health > 0);
 
             // Wictory loop
-            /*
+            
             if (Player.Health > Monsters.Health)
             {
                 Utility.Write($".. The {Monsters.Class} crumbles to the ground reciving it's final blow from your" +
@@ -122,227 +184,9 @@ namespace HeroVsMonster
                 Utility.Heading("Game Over!");
                 Utility.Write($"You where beaten by a {Monsters.Class}...");
                 Utility.Write($"Final Level: {Player.Level} \nMonsters beaten: {MonstersBeaten}");
-            }*/
-
-     //   } 
-       /* 
-        public static int AttackMultiplier(string _attacker)
-        // Function that calculates (Weapon skill + Weapon type - Defence) x  Level, reurns Multiplikasjon(int)
-        {
-            int _level = 1;
-
-            string _weapon;
-            double _weaponValue;
-
-            double _attackTypeMultiplier = 0.2;
-            string _attackType;
-
-            List<string> _defenceType = new List<string>();
-            List<string> _preferdWeapon = new List<string>();
-
-            // The monster attacks
-            if (_attacker != Player.Name)
-            {
-                _attackType = Monsters.Class;
-                _level = Monsters.Level;
-                _weapon = Monsters.Weapon;
-                foreach (string x in Player.Defence) { _defenceType.Add(x); }
-                foreach (string pw in Monsters.PreferedWeapon) { _preferdWeapon.Add(pw); }
-            }
-            // The hero attacks
-            else
-            {
-                _attackType = Player.Class;
-                _level = Player.Level;
-                _weapon = Player.Weapon;
-                foreach (string x in Monsters.Defence) { _defenceType.Add(x); }
-                foreach (string pw in Player.PreferedWeapon) { _preferdWeapon.Add(pw); }
             }
 
-            string[] bluntWeapons = { "Mace", "Staff", "Fists", "Umbrella", "WoodenClub", "TreeTrunk", "Pebbles", "Staff", "Fists" };
-            string[] magicWeapons = { "Wand", "GobblinWand", "Staff" };
-            string[] holyWeapons = { "Wand", "Umbrella", "Staff" };
-            string[] sharpWeapons = { "PitchFork", "Sword", "GreatSword", "Shovel", "Bow", "CrossBow", "MakeShiftSword" };
-
-            // AttackType vs DefenceType value selector
-            foreach (string a in _defenceType)
-            {
-                if (Array.Exists(bluntWeapons, element => element == _attackType))
-                {
-                    switch (a)
-                    {
-                        case "Faith":
-                            _attackTypeMultiplier = +0.88;
-                            break;
-                        case "Leather":
-                            _attackTypeMultiplier = +0.45;
-                            break;
-                        case "ArchaneRobe":
-                            _attackTypeMultiplier = +0.88;
-                            break;
-                        case "Steel":
-                            _attackTypeMultiplier = -1;
-                            break;
-                        case "ThickHide":
-                            _attackTypeMultiplier = +0.56;
-                            break;
-                        case "Copper":
-                            _attackTypeMultiplier = -0.33;
-                            break;
-                        case "ChainMail":
-                            _attackTypeMultiplier = -0.52;
-                            break;
-                        case "HolyRobe":
-                            _attackTypeMultiplier = +0.88;
-                            break;
-                        default: // None
-                            _attackTypeMultiplier = +2;
-                            break;
-                    }
-                }
-                else if (Array.Exists(sharpWeapons, element => element == _attackType))
-                {
-                    switch (a)
-                    {
-                        case "Faith":
-                            _attackTypeMultiplier = +1.2;
-                            break;
-                        case "Leather":
-                            _attackTypeMultiplier = +0.75;
-                            break;
-                        case "ArchaneRobe":
-                            _attackTypeMultiplier = +1.2;
-                            break;
-                        case "Steel":
-                            _attackTypeMultiplier = +0.25;
-                            break;
-                        case "ThickHide":
-                            _attackTypeMultiplier = +0.75;
-                            break;
-                        case "Copper":
-                            _attackTypeMultiplier = +0.45;
-                            break;
-                        case "ChainMail":
-                            _attackTypeMultiplier = +0.35;
-                            break;
-                        case "HolyRobe":
-                            _attackTypeMultiplier = +1.2;
-                            break;
-                        default: // None
-                            _attackTypeMultiplier = +1.5;
-                            break;
-                    }
-                }
-                else if (Array.Exists(magicWeapons, element => element == _attackType))
-                {
-                    switch (a)
-                    {
-                        case "Faith":
-                            _attackTypeMultiplier = +0.38;
-                            break;
-                        case "Leather":
-                            _attackTypeMultiplier = +1.45;
-                            break;
-                        case "ArchaneRobe":
-                            _attackTypeMultiplier = -1.0;
-                            break;
-                        case "Steel":
-                            _attackTypeMultiplier = +1.7;
-                            break;
-                        case "ThickHide":
-                            _attackTypeMultiplier = +1;
-                            break;
-                        case "Copper":
-                            _attackTypeMultiplier = +1.5;
-                            break;
-                        case "ChainMail":
-                            _attackTypeMultiplier = +1.52;
-                            break;
-                        case "HolyRobe":
-                            _attackTypeMultiplier = +0.28;
-                            break;
-                        default: // None
-                            _attackTypeMultiplier = +2;
-                            break;
-                    }
-                }
-                else if (Array.Exists(holyWeapons, element => element == _attackType))
-                {
-                    switch (a)
-                    {
-                        case "Faith":
-                            _attackTypeMultiplier = +0.38;
-                            break;
-                        case "Leather":
-                            _attackTypeMultiplier = +1.45;
-                            break;
-                        case "ArchaneRobe":
-                            _attackTypeMultiplier = +0.28;
-                            break;
-                        case "Steel":
-                            _attackTypeMultiplier = +1.7;
-                            break;
-                        case "ThickHide":
-                            _attackTypeMultiplier = +1;
-                            break;
-                        case "Copper":
-                            _attackTypeMultiplier = +1.5;
-                            break;
-                        case "ChainMail":
-                            _attackTypeMultiplier = +1.52;
-                            break;
-                        case "HolyRobe":
-                            _attackTypeMultiplier = -1.0;
-                            break;
-                        default: // None
-                            _attackTypeMultiplier = +2;
-                            break;
-                    }
-                }
-                else //Ptichfork
-                {
-                    _attackTypeMultiplier = +2;
-                }
-            }
-
-            // Adding weapon hit bonus
-            switch (_weapon)
-            {
-                // Farmer tools
-                case "Umbrella": _weaponValue = 0.2; break;
-                case "Pebbles": _weaponValue = 0.3; break;
-                case "PitchFork": _weaponValue = 1.5; break;
-                case "Shovel": _weaponValue = 1; break;
-                // Magic Tools
-                case "Staff": _weaponValue = 0.4; break;
-                case "Wand": _weaponValue = 0.42; break;
-                case "GobblinWand": _weaponValue = 0.34; break;
-                //Warrior Tools
-                case "Sword": _weaponValue = 0.75; break;
-                case "GreatSword": _weaponValue = 1; break;
-                case "Mace": _weaponValue = 0.75; break;
-                //Archer Tools
-                case "Bow": _weaponValue = 0.67; break;
-                case "CrossBow": _weaponValue = 0.85; break;
-                //Monster Tools
-                case "WoodenClub": _weaponValue = 0.51; break;
-                case "MakeShiftSword": _weaponValue = 0.75; break;
-                case "TreeTrunk": _weaponValue = 2; break;
-                // Fists
-                default:
-                    _weaponValue = 0.2;
-                    break;
-            }
-
-            // Loop to add bonus if Preafferd weapon is chosen.
-            foreach (string pw in _preferdWeapon) { _weaponValue = (pw == _weapon) ? _weaponValue * 3 : +0; }
-
-            // Adding and multiplying everything
-            var _result = (_attackTypeMultiplier + _weaponValue) * (double)_level;
-
-            return (int)_result;
-        }
-        */
+        } 
     }
 }
 

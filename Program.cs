@@ -32,6 +32,8 @@ namespace HeroVsMonster
         public static string MenuName = "Hero Vs Monseters";
         public static string consoleColor = "";
         // Main window
+        public static double pDefValue, pAttStr, mDefValue, mAttStr;
+        
         // 25 Wide + 15 High
         public static string[] AvatarP = { 
             "@@@@@ ##### ##### ##### @@@@@", 
@@ -56,11 +58,11 @@ namespace HeroVsMonster
             " ",
             $" Hp: {Player.Health}",
             " ",
-            $" Def: 5.66",
+            $" Defencevalue: {pDefValue} ",
             " ",
             $" Wep: {Player.Weapon}",
             " ",
-            $" Att: 25",
+            $" AttStrength: {pAttStr} ",
             " ",
             " ",
             " ",
@@ -91,11 +93,11 @@ namespace HeroVsMonster
             "##### ##### ##### ",
             $" Hp: {Monsters.Health} ",
             " ",
-            $" Def: 5.66 ",
+            $" Defencevalue: {mDefValue} ",
             " ",
             $" Wep: {Monsters.Weapon} ",
             " ",
-            $"  Att: 25 ",
+            $"  AttStrength: {mAttStr} ",
             " ",
             " ",
             " ",
@@ -119,8 +121,12 @@ namespace HeroVsMonster
         {
 
         }
+        public static void MainMenue() { }
+
+        public static void PlayerCreation() { }
 
         public static void StoryWindow() 
+        // The main Gameloop - this one updates all game related Visuals
         {
             HeadWindow();
             if (figth)
@@ -148,10 +154,6 @@ namespace HeroVsMonster
             Console.WriteLine("\n ");
             DialogueWindow();
         }
-
-        public static void MainMenue () { }
-
-        public static void PlayerCreation() { }
 
         public static void HeadWindow()
         {
