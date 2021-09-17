@@ -133,34 +133,55 @@ namespace HeroVsMonster
         public static void Figth()
         {
             Random _random = new Random();
+            Game.figth = true;
+            
             // Spawn Monster
             // Save Game
             // Calculate the Defence and attack values
             InitializeFight();
+            Game.update = true;
+            int _mStartHp = Monsters.Health;
             // Loop
+            string _potion = Player.Inventory.Contains("Potion") ? "Use Potion" : "Potions Empty";
+            string _trick = Player.Inventory.Contains("Oil") ? "Use Trick" : "No tricks";
+
+            Game.pResponce.SetValue("Throw Dice", 0);
+            Game.pResponce.SetValue(_potion, 1);
+            Game.pResponce.SetValue(_trick, 2);
+            Game.pResponce.SetValue("Save & Exit", 3);
+
+            switch (Game.pChoice) // Try input > valid input 
+            {
+
+            }
+
             // VictoryConditions
-
-            /*
-            bool Parry = (DamageType == (ranged || Magic || Holy)) ? false : true;
-            _parry = (1 == _random.next(0,1)) ? -0.5 : 0.0;
-            */
-
-            /*
-            if Inventory.contains("Oil") Then explode + Firedamage
-            */
 
             do
             {
+
                 Weapon(Player.Weapon, Player.Class); // Set the Stats
                 int damage = (int) DamageGiven(Utility.DiceRoll(), Player.Class); // the initial damage
 
                 // Parry chance for ranged weapons
-                bool Parry = EnumHelper.IsParsable<RangedWeapons>(Player.Weapon) || EnumHelper.IsParsable<MagicWeapons>(Player.Weapon) || EnumHelper.IsParsable<HolyWeapons>(Player.Weapon) ? true : false;
-                if (Parry)
+                if (EnumHelper.IsParsable<RangedWeapons>(Player.Weapon) || EnumHelper.IsParsable<MagicWeapons>(Player.Weapon) || EnumHelper.IsParsable<HolyWeapons>(Player.Weapon))
                 {
                     int _parry = _random.Next(0, 1);
                     damage = (int) (damage * (1-0.75));
                 }
+                // Level Up Weapon skills
+                Player.WeaponProffeciency += damage / _mStartHp;
+
+                //Surprise >> Magic + Combustable = Explosion
+                if (Monsters.Inventory.Contains("Oil") && (AttackType == "Magic" || AttackType == "Holy")) 
+                {
+                    int _supriseDamage = Utility.DiceRoll() * (int) AttackStrength;
+                    damage += _supriseDamage;
+                    Game.subHeader = $"{Monsters.Class} had a vial of oil in it's pocket wich blew up in flames, taking {_supriseDamage}";
+                }
+
+                // Deal the damage
+                Monsters.Health -= damage;
 
                 if (Monsters.Health < 0) continue;
 
