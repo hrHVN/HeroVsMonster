@@ -16,6 +16,7 @@ namespace HeroVsMonster
         public static int Level;
         public static int Xp;
         public static int Health;
+        public static int MaxHealth;
         public static int WeaponProffeciency;
         public static int DeffenceEndurance;
         public static int Wallet;

@@ -140,71 +140,144 @@ namespace HeroVsMonster
             // Calculate the Defence and attack values
             InitializeFight();
             Game.update = true;
-            int _mStartHp = Monsters.Health;
+            int damage;
+
             // Loop
             string _potion = Player.Inventory.Contains("Potion") ? "Use Potion" : "Potions Empty";
             string _trick = Player.Inventory.Contains("Oil") ? "Use Trick" : "No tricks";
 
-            Game.pResponce.SetValue("Throw Dice", 0);
-            Game.pResponce.SetValue(_potion, 1);
-            Game.pResponce.SetValue(_trick, 2);
-            Game.pResponce.SetValue("Save & Exit", 3);
-
-            switch (Game.pChoice) // Try input > valid input 
+            if (Player.Health > 0 && Monsters.Health > 0) 
             {
+                Game.pResponce.SetValue("Throw Dice", 0);
+                Game.pResponce.SetValue(_potion, 1);
+                Game.pResponce.SetValue(_trick, 2);
+                Game.pResponce.SetValue("Save & Exit", 3);
 
+                switch (Game.pChoice) // Try input > valid input 
+                {
+                    case "1": // DiceRoll
+                        Weapon(Player.Weapon, Player.Class); // Set the Stats
+                        damage = (int)DamageGiven(Utility.DiceRoll(), Player.Class); // the initial damage
+
+                        // Parry chance for ranged weapons
+                        if (EnumHelper.IsParsable<RangedWeapons>(Player.Weapon) || EnumHelper.IsParsable<MagicWeapons>(Player.Weapon) || EnumHelper.IsParsable<HolyWeapons>(Player.Weapon))
+                        {
+                            int _parry = _random.Next(0, 1);
+                            damage = (int)(damage * (1 - 0.75));
+                        }
+                        
+                        // Level Up Weapon skills
+                        Player.WeaponProffeciency += damage / Monsters.MaxHealth;
+
+                        //Surprise >> Magic + Combustable = Explosion
+                        if (Monsters.Inventory.Contains("Oil") && (AttackType == "Magic" || AttackType == "Holy"))
+                        {
+                            int _supriseDamage = Utility.DiceRoll() * (int)AttackStrength;
+                            Monsters.Health -= _supriseDamage;
+                            Game.subHeader = $"{Monsters.Class} had a vial of oil in it's pocket wich blew up in flames, taking {_supriseDamage}";
+                        }
+
+                        // Deal the damage
+                        Monsters.Health -= damage;
+                        
+                        // SaveGame and continue
+                        break;
+
+                    case "2": // Use Potion
+                        if (Player.Inventory.Contains("Potion"))
+                        {
+                            double _potionHp = Player.MaxHealth * (1 + (_random.Next(5, 50) / 100));
+                            Player.Health += (int)_potionHp;
+                            Game.subHeader = $"Thats refreshing, the potion heals you with {_potionHp} Hp!";
+                        }
+                        else Game.subHeader = "You have no Potions left...";
+                        // SaveGame
+                        break;
+
+                    case "3": // Use Trick
+                        if (Player.Inventory.Contains("oil"))
+                        {
+                            int _trickDamage = Utility.DiceRoll() * (int)AttackStrength;
+
+                            // Parry chance - if parry >> 75% damage
+                            _trickDamage = (_random.Next(0, 1) == 0) ? (int)(_trickDamage * (1 - 0.75)) : _trickDamage;
+
+                            Monsters.Health -= _trickDamage;
+                        }
+                        else Game.subHeader = "You have no tricks to use";
+                        // SaveGame
+                        break;
+                    default:
+                        // Save
+                        // Exit
+                        break;
+                }
+
+                // Monster attacks
+                if (Monsters.Health < 0)
+                {
+                    Array.Clear(Game.pResponce, 0, Game.pResponce.Length);
+                    Game.pResponce.SetValue("Continue", 0);
+                    Game.pResponce.SetValue("Save & Exit", 1);
+
+                    switch (Game.pChoice) // Try input > valid input 
+                    {
+                        case "1":
+                            Weapon(Monsters.Weapon, Monsters.Class); // Set the Stats
+                            damage = (int)DamageGiven(Utility.DiceRoll(), Monsters.Class); // the initial damage
+
+                            // Parry chance for ranged weapons
+                            if (EnumHelper.IsParsable<RangedWeapons>(Monsters.Weapon) || EnumHelper.IsParsable<MagicWeapons>(Monsters.Weapon) || EnumHelper.IsParsable<HolyWeapons>(Monsters.Weapon))
+                            {
+                                int _parry = _random.Next(0, 1);
+                                damage = (int)(damage * (1 - 0.75));
+                            }
+                            // Level Up Weapon skills
+                            Monsters.WeaponProffeciency += damage / Player.MaxHealth;
+
+                            //Surprise >> Magic + Combustable = Explosion
+                            if (Player.Inventory.Contains("Oil") && (AttackType == "Magic" || AttackType == "Holy"))
+                            {
+                                int _supriseDamage = Utility.DiceRoll() * (int)AttackStrength;
+                                damage += _supriseDamage;
+                                Game.subHeader = $"One vial of oil in your pocket exploded, giving you {_supriseDamage} damage..";
+                            }
+
+                            // Deal the damage
+                            Player.Health -= damage;
+
+                            break;
+                        default:
+                            // Save
+                            // Exit
+                            break;
+                    }
+                }
             }
 
             // VictoryConditions
 
-            do
+            else if (Player.Health > Monsters.Health) // Player Wins
             {
-
-                Weapon(Player.Weapon, Player.Class); // Set the Stats
-                int damage = (int) DamageGiven(Utility.DiceRoll(), Player.Class); // the initial damage
-
-                // Parry chance for ranged weapons
-                if (EnumHelper.IsParsable<RangedWeapons>(Player.Weapon) || EnumHelper.IsParsable<MagicWeapons>(Player.Weapon) || EnumHelper.IsParsable<HolyWeapons>(Player.Weapon))
-                {
-                    int _parry = _random.Next(0, 1);
-                    damage = (int) (damage * (1-0.75));
-                }
-                // Level Up Weapon skills
-                Player.WeaponProffeciency += damage / _mStartHp;
-
-                //Surprise >> Magic + Combustable = Explosion
-                if (Monsters.Inventory.Contains("Oil") && (AttackType == "Magic" || AttackType == "Holy")) 
-                {
-                    int _supriseDamage = Utility.DiceRoll() * (int) AttackStrength;
-                    damage += _supriseDamage;
-                    Game.subHeader = $"{Monsters.Class} had a vial of oil in it's pocket wich blew up in flames, taking {_supriseDamage}";
-                }
-
-                // Deal the damage
-                Monsters.Health -= damage;
-
-                if (Monsters.Health < 0) continue;
-
-                Weapon(Monsters.Weapon, Monsters.Class);
-            }
-            while (Player.Health > 0 && Monsters.Health > 0);
-
-            // Wictory loop
-            
-            if (Player.Health > Monsters.Health)
-            {
-                Utility.Write($".. The {Monsters.Class} crumbles to the ground reciving it's final blow from your" +
-                    $" {Player.Weapon} taking {playerAttack} damage!");
-                //Give Hero the xp and stats.
-                Player.Xp += (Monsters.Level % 3);
-                MonstersBeaten++;
+                // add xp
+                // add loot
+                // chance new wep >> if new wep >> reset WeapProfficency
+                // Wictory message
+                // SaveGame
+                // Next Monster
             }
             //Game Over
             else
             {
-                Utility.Heading("Game Over!");
-                Utility.Write($"You where beaten by a {Monsters.Class}...");
-                Utility.Write($"Final Level: {Player.Level} \nMonsters beaten: {MonstersBeaten}");
+                // SaveGame
+                // Looser message
+                // Display stats
+                    // Total Monsters beaten
+                    // Level
+                    // Damage done
+                    // Monsterclasses beaten + int
+                    // Potions used + healed?
+                    // Tricks used + damage?
             }
 
         } 
