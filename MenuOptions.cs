@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.IO;
+using HeroVsMonster.Content;
 
 /*
  *  When adding a new Menue:
@@ -85,45 +86,27 @@ namespace HeroVsMonster
                             Console.Write("\nLoad Game");
                             try
                             {
-                                string[] _saves = Directory.GetFiles(@"C:\Users\Andreas\source\repos\HeroVsMonster\saves\", "*.txt");
-                                List<int> _skipDeadpeople = new List<int> { };
-                                int _intSaves = 1; // Menue Choice
+                                var saveGames = SaveManager.LoadSaveGames(false);
 
-                                foreach (string S in _saves)
+                                for (int i = 1; i < saveGames.Count+1; i++)
                                 {
-                                    StreamReader sr = new StreamReader(S);
-
-                                    string _temporaryName = sr.ReadLine();
-                                    int _temporaryHealth = Convert.ToInt16(sr.ReadLine());
-
-                                    if (_temporaryHealth > 0)
-                                    {
-                                        Utility.WriteLine(Utility.Center($"\n{S} < *Dead* >"));
-                                        _skipDeadpeople.Add(_intSaves);
-                                        _intSaves++;
-                                    }
-                                    else
-                                    {
-                                        Utility.WriteLine(Utility.Center($"\n{S} < {_intSaves} >"));
-                                        _intSaves++;
-                                    }
+                                    var saveGame = saveGames[i];
+                                    if (!saveGame.IsAlive)
+                                        Utility.WriteLine(Utility.Center($"\n{i}: {saveGame.Name} < *Dead* >"));
                                 }
 
                                 string _inputSave = Console.ReadLine();
                                 if (int.TryParse(_inputSave, out _choice))
                                 {
-                                    if ((_choice > theList.Length) || _skipDeadpeople.Contains(_choice))
+                                    if (_choice > saveGames.Count + 1)
                                     {
-                                        Utility.WriteLine($"Please enter a number between 1-{theList.Length}. That arent Dead People!");
+                                        Utility.WriteLine($"Please enter a number between 1-{theList.Length}.");
                                         break;
                                     }
                                     else
                                     {
-                                        string S = _saves[_intSaves - 1];
-                                        StreamReader sr = new StreamReader(S);
-                                        string _temporaryName = sr.ReadLine();
-
-                                        Game.LoadGame(_temporaryName);
+                                        var selectedSaveGame = saveGames[_choice];
+                                        Game.LoadGame(selectedSaveGame);
                                     }
                                 }
                             }

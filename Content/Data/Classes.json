@@ -1,0 +1,60 @@
+﻿[
+  {
+    "class": "Warrior",
+    "defence": "Steel",
+    "health": 100,
+    "greeting": ".. *Sigh*, thank the heavens that you a Warrior! Came to our resque. This will give the Towns people som safety",
+    "WeaponProffeciency": 0,
+    "preferedWeapons": [
+      "GreatSword",
+      "Sword",
+      "Mace"
+    ]
+  },
+  {
+    "class": "Mage",
+    "defence": "Archane",
+    "health": 100,
+    "greeting": "Great we really need an Mage to take down those pesky flying things! Just don't die on us too fast, these monsters are Nasty",
+    "WeaponProffeciency": 0,
+    "preferedWeapons": [
+      "Wand",
+      "Staff"
+    ]
+  },
+  {
+    "class": "Archer",
+    "defence": "Leather",
+    "health": 100,
+    "greeting": "Wow! An archer! I don't know if i should worry or be thankfull! The last Archer almost wiped out our city when he sneezed...",
+    "WeaponProffeciency": 0,
+    "preferedWeapons": [
+      "Bow",
+      "CrossBow"
+    ]
+  },
+  {
+    "class": "Munk",
+    "defence": "Faith",
+    "health": 100,
+    "greeting": "A Munk! Are you shure you'r up for this?? Didn't think \"Holy People\" did much figthing..",
+    "WeaponProffeciency": 0,
+    "preferedWeapons": [
+      "Staff",
+      "Umbrella",
+      "Fists"
+    ]
+  },
+  {
+    "class": "Farmer",
+    "defence": "Random",
+    "health": 200,
+    "greeting": "*Yikes!!* A Farmer!! What is the king thinking sending YOU of all people, times must really be dire...",
+    "WeaponProffeciency": 0,
+    "preferedWeapons": [
+      "Pitchfork",
+      "Shovel",
+      "Fists"
+    ]
+  }
+]

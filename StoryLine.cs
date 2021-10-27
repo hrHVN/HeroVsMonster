@@ -28,10 +28,10 @@ namespace HeroVsMonster
 
         static void Choice(string A, string B)
         {
-            string input = Utility.Input($"{Player.Name}, Which path will you Choose? {A} or {B}");
+            string input = Utility.Input($"{Player.Current.Name}, Which path will you Choose? {A} or {B}");
 
-            if (input == "a") { Utility.WriteLine($"Mighty {Player.Class} You have chosen path {A}!"); }
-            else { Utility.WriteLine($"Mighty {Player.Class} You have chosen path {B}!"); }
+            if (input == "a") { Utility.WriteLine($"Mighty {Player.Current.Name} You have chosen path {A}!"); }
+            else { Utility.WriteLine($"Mighty {Player.Current.Name} You have chosen path {B}!"); }
         }
 
         public class Item

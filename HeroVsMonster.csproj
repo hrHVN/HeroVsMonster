@@ -9,6 +9,31 @@
     <Folder Include="console\" />
     <Folder Include="saves\" />
     <Folder Include="sound\" />
+    <Folder Include="Content\" />
+    <Folder Include="Characters\" />
+    <Folder Include="Content\Data\" />
+    <Folder Include="Content\Models\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Remove="Newtonsoft.Json" />
+    <None Remove="Content\" />
+    <None Remove="Characters\" />
+    <None Remove="Content\Data\" />
+    <None Remove="Content\Models\" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Update="Content\Weapons.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Content\Data\Classes.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Content\Data\Weapons.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
 </Project>
