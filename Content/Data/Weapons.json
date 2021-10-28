@@ -1,0 +1,71 @@
+﻿[
+  {
+    "name": "PitchFork",
+    "type": "Sharp"
+  },
+  {
+    "name": "Sword",
+    "type": "Sharp"
+  },
+  {
+    "name": "GreatSword",
+    "type": "Sharp"
+  },
+  {
+    "name": "MakeShiftSword",
+    "type": "Sharp"
+  },
+  {
+    "name": "Mace",
+    "type": "Blunt"
+  },
+  {
+    "name": "Staff",
+    "type": "Holy"
+  },
+  {
+    "name": "Wand",
+    "type": "Holy"
+  },
+  {
+    "name": "Shovel",
+    "type": "Blunt"
+  },
+  {
+    "name": "Bow",
+    "type": "Ranged"
+  },
+  {
+    "name": "CrossBow",
+    "type": "Ranged"
+  },
+  {
+    "name": "Umbrella",
+    "type": "Holy"
+  },
+  {
+    "name": "WoodenClub",
+    "type": "Blunt"
+  },
+  {
+    "name": "TreeTrunk",
+    "type": "Blunt"
+  },
+  {
+    "name": "GoblinWand",
+    "type": "Magic"
+  },
+  {
+    "name": "Pebbles",
+    "type": "Ranged"
+  },
+  {
+    "name": "Fists",
+    "type": "Blunt"
+  },
+  {
+    "name": "Javelin",
+    "type": "Sharp"
+  }
+
+]

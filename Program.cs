@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using HeroVsMonster.Content;
 
 /*
  *  To DO
@@ -17,7 +18,8 @@ namespace HeroVsMonster
     {
         static void Main(string[] args)
         {
-            Game.StoryWindow();
+            Game.SplashScreen();
+            Game.MainMenu();
         }
     }
 
@@ -56,11 +58,11 @@ namespace HeroVsMonster
         public static string[] sidebarP = {
             "##### ##### ##### ", 
             " ",
-            $" Hp: {Player.Health}",
+            $" Hp: {Player.Current.Health}",
             " ",
             $" Defencevalue: {pDefValue} ",
             " ",
-            $" Wep: {Player.Weapon}",
+            $" Wep: {Player.Current.Weapon}",
             " ",
             $" AttStrength: {pAttStr} ",
             " ",
@@ -91,11 +93,11 @@ namespace HeroVsMonster
 
         public static string[] sidebarM = {
             "##### ##### ##### ",
-            $" Hp: {Monsters.Health} ",
+            $" Hp: {Monster.Current.Health} ",
             " ",
             $" Defencevalue: {mDefValue} ",
             " ",
-            $" Wep: {Monsters.Weapon} ",
+            $" Wep: {Monster.Current.Weapon} ",
             " ",
             $"  AttStrength: {mAttStr} ",
             " ",
@@ -121,9 +123,13 @@ namespace HeroVsMonster
         {
 
         }
-        public static void MainMenue() { }
+        public static void MainMenu() {
+            
+        }
 
-        public static void PlayerCreation() { }
+        public static void PlayerCreation() {
+
+        }
 
         public static void StoryWindow() 
         // The main Gameloop - this one updates all game related Visuals
@@ -157,8 +163,8 @@ namespace HeroVsMonster
 
         public static void HeadWindow()
         {
-            int lvl = Player.Level + 1;
-            int prosent = (Player.Xp / Player._nextLevel) * 100;
+            int lvl = Player.Current.Level + 1;
+            int prosent = (Player.Current.Xp / Player.Current._nextLevel) * 100;
             string _xProgress;
             string _XpColor;
 
@@ -321,26 +327,9 @@ namespace HeroVsMonster
             Console.ResetColor();
         }
 
-        public static void LoadGame(string _save)
+        public static void LoadGame(SaveGame saveGame)
         {
-            string path = @"C:\Users\Andreas\source\repos\HeroVsMonster\saves\";
-            StreamReader sr = new StreamReader(_save + ".txt");
-
-            Player.Name = sr.ReadLine();
-            Player.Health = Convert.ToInt16(sr.ReadLine());
-            Player.Class = sr.ReadLine();
-            Player.Level = Convert.ToInt16(sr.ReadLine());
-            Player.Xp = Convert.ToInt16(sr.ReadLine());
-            Player.Weapon = sr.ReadLine();
-            Player.Wallet = Convert.ToInt16(sr.ReadLine());
-
-            string line = sr.ReadLine();
-            while (line != null)
-            {
-                Player.Inventory.Add(line);
-            }
-            sr.Close();
-
+            Player.Current = saveGame.Player;
             Utility.WriteLine(Utility.Center("Game Loaded!"), "red");
             Utility.Pause();
         }
@@ -349,22 +338,12 @@ namespace HeroVsMonster
         {
             try
             {
-                // C: \Users\Andreas\source\repos\HeroVsMonster\saves\
-
-                string _path = @"C:\Users\Andreas\source\repos\HeroVsMonster\saves\";
-                StreamWriter sw = new StreamWriter(_path + $"{Player.Name}.txt", false);
-                sw.WriteLine(Player.Name);
-                sw.WriteLine(Player.Health);
-                sw.WriteLine(Player.Class);
-                sw.WriteLine(Player.Level);
-                sw.WriteLine(Player.Xp);
-                sw.WriteLine(Player.Weapon);
-                sw.WriteLine(Player.Wallet);
-                foreach (string inv in Player.Inventory) { sw.WriteLine(inv); }
-                sw.Close();
+                SaveManager.Save(Player.Current);
             }
-            catch (Exception e) { Utility.WriteLine("Exception: " + e.Message); }
-
+            catch {
+                Utility.WriteLine("Failed to save game!");
+            }
+            
             Utility.WriteLine(Utility.Center("Game Saved!"), "cyan");
             Utility.Pause();
         }

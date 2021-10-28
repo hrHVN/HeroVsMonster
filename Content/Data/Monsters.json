@@ -1,0 +1,81 @@
+﻿[
+  {
+    "class": "Orc",
+    "health": 75,
+    "defence": "ThickHide",
+    "WeaponProffeciency": 0,
+    "preferedWeapons": [
+      "MakeShiftSword",
+      "Fists",
+      "Mace"
+    ]
+  },
+  {
+    "class": "Goblin",
+    "health": 35,
+    "defence": "Leather",
+    "WeaponProffeciency": 0,
+    "preferedWeapons": [
+      "GoblinWand",
+      "Pebbles",
+      "WoodenClub"
+    ]
+  },
+  {
+    "class": "Giant",
+    "health": 105,
+    "defence": "ThickHide",
+    "WeaponProffeciency": 0,
+    "preferedWeapons": [
+      "TreeTrunk",
+      "WoodenClub"
+    ]
+  },
+  {
+    "class": "Wizard",
+    "health": 75,
+    "defence": "Archane",
+    "WeaponProffeciency": 0,
+    "preferedWeapons": [
+      "GoblinWand",
+      "Wand",
+      "Staff"
+    ]
+  },
+  {
+    "class": "FallenAngel",
+    "health": 95,
+    "defence": "Archane",
+    "WeaponProffeciency": 0,
+    "preferedWeapons": [
+      "Sword",
+      "Bow",
+      "CrossBow",
+      "GreatSword"
+    ]
+  },
+  {
+    "class": "DarkElf",
+    "health": 85,
+    "defence": "ChainMail",
+    "WeaponProffeciency": 0,
+    "preferedWeapons": [
+      "Staff",
+      "Bow",
+      "GreatSword"
+    ]
+  },
+  {
+    "class": "BlackDwarves",
+    "health": 105,
+    "defence": "Steel",
+    "WeaponProffeciency": 0,
+    "preferedWeapons": [
+      "Sword",
+      "CrossBow",
+      "GreatSword",
+      "Mace",
+      "Fists"
+    ]
+  }
+]

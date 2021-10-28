@@ -72,7 +72,6 @@ namespace HeroVsMonster
             {
                 throw new Exception("T must be an Enumeration type.");
             }
-            T val;
             return (T)Enum.ToObject(enumType, intValue);
         }
 
