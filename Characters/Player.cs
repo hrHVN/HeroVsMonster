@@ -9,10 +9,8 @@ using System.Collections.Generic;
 
 namespace HeroVsMonster
 {
-    public static class Player
+    public static class Player : ICharacter
     {
-        public static string Name;
-        public static string Class;
         public static string Weapon;
 
         public static int Level;
